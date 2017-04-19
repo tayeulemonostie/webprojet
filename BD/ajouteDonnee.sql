@@ -19,3 +19,6 @@ VALUES (1, @calise, 'root', now() + INTERVAL 90 DAY );
 
 /*Request pour grab user passeword user*/
 SELECT nom_utilisateur, user_password FROM Comptes WHERE nom_utilisateur='CorSeb' AND user_password='root';
+
+/*Get le no departe du user*/
+SELECT departements_ID FROM Usagers_description WHERE usager_ID=1;

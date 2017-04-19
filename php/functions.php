@@ -22,12 +22,20 @@ par l'utilisateur et aussi la Connection à la base de donnée
 Elle retourne une réponse si le user est valide en fonction du password*/
 function authentification ($login, $password, $bd){
   $reponse = "";
-  $reqUser = $bd->query("SELECT nom_utilisateur, user_password FROM Comptes WHERE nom_utilisateur=\"$login\" AND user_password=\"$password\";");
+  $reqUser = $bd->query("SELECT nom_utilisateur, user_password, usager_ID FROM Comptes WHERE nom_utilisateur=\"$login\" AND user_password=\"$password\";");
   $count = $reqUser->rowCount();
+  $tabUser = $reqUser->fetch(PDO::FETCH_ASSOC);
+  $reqAdmin = $bd->query("SELECT departements_ID FROM Usagers_description WHERE usager_ID=$tabUser[\'usager_ID\'];");
+  echo $reqAdmin;
+  $tabUserDep = $reqAdmin->fetch(PDO::FETCH_ASSOC);
+  print_r($tabUserDep);
   if (!($count)){
     /*À ENLEVER*/
     $reponse = "l'utilisateur et/ou le mot de passe est incorrect.";
   } else {
+    /*if (){
+
+    }*/
     /*À ENLEVER*/
     $reponse = "L'utilisateur et password sont dans la BD ! :)";
   }
