@@ -36,41 +36,20 @@ catch(PDOExeption $e){
   echo "CALISE la bd a pas connect... tien vla l'erreur : " . $e->getMessage();
 }
 
-/*Génération de la Page Test de fonctions login*/
-$varHTML = "<h1>Page Test de la fonction authentification()</h1>" . PHP_EOL
-           . "<form method=\"POST\" action=\"index.php\">" . PHP_EOL
-           . " </br> Login : <input type=\"text\" name=\"login\"/> </br></br>" . PHP_EOL
-           . "Password : <input type=\"text\" name=\"password\"/> </br>" . PHP_EOL
-           . "</br> <input type=\"submit\" name=\"submit\" value=\"Connect biatch\"/>" . PHP_EOL
-           . "</form>";
+/*Génération de la Page Test de fonctions admin*/
+$varHTML = "<h1>Page Test du user</h1>" . PHP_EOL
+
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
-if (isset($_POST["login"]) && isset($_POST["password"])){
-  $crisse = authentification($_POST["login"], $_POST["password"], $bd);
-  if ($crisse == "non")
-  {
-   $varHTML .= "</br></br>L'utilisateur et/ou le mot de passe n'existe pas";
-  }
-  elseif ($crisse == "admin")
-  {
-    header('Location: ./admin.php');
-  }
-  else
-  {
-    header('Location: ./user.php');
-  }
-
-}
 
  ?>
 
-<!--Code HTML PEUT ETRE METTRE DANS UNE FONCTION.....-->
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>WEBPROJET</title>
-  </head>
-  <body>
-    <?PHP echo $varHTML ?>
-  </body>
-</html>
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <title>WEBPROJET</title>
+   </head>
+   <body>
+     <?PHP echo $varHTML ?>
+   </body>
+ </html>
