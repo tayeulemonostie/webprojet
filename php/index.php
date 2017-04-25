@@ -16,6 +16,8 @@ PENSEZ À METTRE DISPLAY_ERROR = ON À OFF AVANT REMISE
 DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
 =====================================*/
 
+/*Démarage de session*/
+
 
 /*===== section link php ======*/
 require "functions.php";
