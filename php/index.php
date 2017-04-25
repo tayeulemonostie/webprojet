@@ -45,7 +45,7 @@ $varHTML = "<h1>Page Test de la fonction authentification()</h1>" . PHP_EOL
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
 if (isset($_POST["login"]) && isset($_POST["password"])){
   $crisse = authentification($_POST["login"], $_POST["password"], $bd);
-  $varHTML .= "</br></br>" . $crisse;
+  $varHTML = "</br></br>" . $crisse;
 }
 
  ?>

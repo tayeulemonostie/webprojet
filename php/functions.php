@@ -25,19 +25,23 @@ function authentification ($login, $password, $bd){
   $reqUser = $bd->query("SELECT nom_utilisateur, user_password, usager_ID FROM Comptes WHERE nom_utilisateur=\"$login\" AND user_password=\"$password\";");
   $count = $reqUser->rowCount();
   $tabUser = $reqUser->fetch(PDO::FETCH_ASSOC);
-  $reqAdmin = $bd->query("SELECT departements_ID FROM Usagers_description WHERE usager_ID=$tabUser[\'usager_ID\'];");
-  echo $reqAdmin;
+  //print_r($tabUser);
+  $testing = $tabUser['usager_ID'];
+  //echo "le chiffre est $testing";
+  $reqAdmin = $bd->query("SELECT departements_ID FROM Usagers_description WHERE usager_ID=$testing;");
   $tabUserDep = $reqAdmin->fetch(PDO::FETCH_ASSOC);
-  print_r($tabUserDep);
+
   if (!($count)){
-    /*À ENLEVER*/
     $reponse = "l'utilisateur et/ou le mot de passe est incorrect.";
   } else {
-    /*if (){
-
-    }*/
+    if ($tabUserDep['departements_ID'] == 4){
+      $reponse = "Bravo tu es un admin :)";
+    }
+    else {
+      $reponse = "ah t'es un user normal";
+    }
     /*À ENLEVER*/
-    $reponse = "L'utilisateur et password sont dans la BD ! :)";
+    //$reponse = "L'utilisateur et password sont dans la BD ! :)";
   }
   return $reponse;
 }
