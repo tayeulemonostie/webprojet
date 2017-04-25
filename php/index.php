@@ -37,10 +37,11 @@ catch(PDOExeption $e){
 }
 
 /*Génération de la Page Test de fonctions login*/
-$varHTML = "<h1>Page Test de la fonction authentification()</h1>" . PHP_EOL
+$varHTML = "<h1>Page d'authentification</h1>" . PHP_EOL
+           . "<h3>Veuillez inscrire votre nom d'utilisateur et mot de passe</h3>" . PHP_EOL
            . "<form method=\"POST\" action=\"index.php\">" . PHP_EOL
            . " </br> Login : <input type=\"text\" name=\"login\"/> </br></br>" . PHP_EOL
-           . "Password : <input type=\"text\" name=\"password\"/> </br>" . PHP_EOL
+           . "Password : <input type=\"password\" name=\"password\"/> </br>" . PHP_EOL
            . "</br> <input type=\"submit\" name=\"submit\" value=\"Connect biatch\"/>" . PHP_EOL
            . "</form>";
 

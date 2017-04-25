@@ -37,7 +37,7 @@ catch(PDOExeption $e){
 }
 
 /*Génération de la Page Test de fonctions admin*/
-$varHTML = "<h1>Page Test de ". $_SESSION['username'] . "</h1>" . PHP_EOL
+$varHTML = "<h1>Page Test de ". $_SESSION['username'] . "</h1>" . PHP_EOL;
 
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
