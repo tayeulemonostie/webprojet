@@ -61,7 +61,10 @@ function authentification ($login, $password, $bd){
 }
 
 
-
-
-
+/*fonction quota*/
+/*function quotaUser (){
+  $vartest = exec('whoiam');
+  return $vartest;
+}
+*/
  ?>

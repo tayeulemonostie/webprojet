@@ -37,8 +37,9 @@ catch(PDOExeption $e){
 }
 
 /*Génération de la Page Test de fonctions admin*/
-$varHTML = "<h1>Page Test du user</h1>" . PHP_EOL
+$varHTML = "<h1>Bienvenue " . $_SESSION['username'] . " !" . "</h1>" . PHP_EOL;
 
+//$varQuota = quotaUser();
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
 
@@ -51,5 +52,8 @@ $varHTML = "<h1>Page Test du user</h1>" . PHP_EOL
    </head>
    <body>
      <?PHP echo $varHTML ?>
+     <div>
+       <?PHP echo "ta mere" ?>
+     </div>
    </body>
  </html>
