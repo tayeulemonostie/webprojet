@@ -60,4 +60,8 @@ function authentification ($login, $password, $bd){
   return $reponse;
 }
 
+
+
+
+
  ?>
