@@ -22,25 +22,112 @@ session_start();
 /*===== section link php ======*/
 require "functions.php";
 
-/*Déclaraton de variables*/
+/*Déclaraton des variables*/
 global $bd;
 
-/*c'est icitte crisse que je connect ma bite dans les données*/
+/*Connection a la DB*/
 try {
   $bd = new PDO("mysql:host=localhost;dbname=webprojet", "root", "root");
   /*activer les exeptions en cas d'erreur */
   $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  //echo "La BD du projet est connectée TABARNAK !!!";
 }
 catch(PDOExeption $e){
-  echo "CALISE la bd a pas connect... tien vla l'erreur : " . $e->getMessage();
+  echo "Erreur de connection à la DB : " . $e->getMessage();
+}
+/*Générer le titre de la page*/
+$varHTML = "<h1>Page de l'administrateur - ".$_SESSION['username']."</h1>".PHP_EOL;
+/*Générer le menu de l'administrateur*/
+$varHTML .=
+"<div class='zoneMenu'>".PHP_EOL.
+    "<h2>Menu</h2>".PHP_EOL.
+    "<ul>".PHP_EOL.
+    "<li><a href='./admin.php?menu=lst_user'>Lister les utilisateurs</a></li>".PHP_EOL.
+    "<li><a href='./admin.php?menu=add_user'>Ajouter un utilisateur</a></li>".PHP_EOL.
+    "<li><a href='./admin.php?menu=mod_user'>Modifier un utilisateur</a></li>".PHP_EOL.
+    "<li><a href='./admin.php?menu=pwd_chng'>Changement de mot de passe</a></li>".PHP_EOL.
+    "<li><a href='./admin.php?menu=pwd_hist'>Consulter l’historique</a></li>".PHP_EOL.
+    "<li><a href='./admin.php?menu=chk_syst'>Consulter l’état du système</a></li>".PHP_EOL.
+    "<li><a href='./admin.php?menu=quo_gest'>Gestion des quotas</a></li>".PHP_EOL.
+    "<li><a href='./admin.php?menu=clr_sess'>Fermer la session</a></li>".PHP_EOL.
+    "</ul>".PHP_EOL.
+"</div>".PHP_EOL;
+/*Générer le contenu selon où se situe l'administrateur*/
+if (!isset($_GET['menu']))
+{
+  $varHTML .=
+  "<div class='zoneContenu'>".PHP_EOL.
+      "<h2>Page d'acceuil</h2>".PHP_EOL.
+      "<p>Bienvenue sur l'interface SebYveAdmin</p>".PHP_EOL;
+}
+else
+{
+ $varHTML .=
+ "<div class='zoneContenu'>".PHP_EOL;
+ switch ($_GET['menu'])
+ {
+  case lst_user:
+      $varHTML .=
+          "<h2>Liste des utilisateurs</h2>".PHP_EOL.
+          "<p>Query à la DB,afficher dans un tableau</p>".PHP_EOL;
+          break;
+  case add_user:
+      $varHTML .=
+          "<h2>Ajouter un utilisateur</h2>".PHP_EOL.
+          "<p>Formulaire avec submit -->> doit également créer un user UNIX avec son quota
+          ,Processus de validation,DB double entry Unix entry</p>".PHP_EOL;
+          break;
+  case mod_user:
+      $varHTML .=
+          "<h2>Modifier un utilisateur</h2>".PHP_EOL.
+          "<p>Formulaire avec submit,Processus de validation,DB alter</p>".PHP_EOL;
+          break;
+  case pwd_chng:
+      $varHTML .=
+          "<h2>Modifier un mot de passe</h2>".PHP_EOL.
+          "<p>Formulaire avec submit,Processus de validation,DB entry</p>".PHP_EOL;
+          break;
+  case pwd_hist:
+      $varHTML .=
+          "<h2>Historique des changements de mot de passe</h2>".PHP_EOL.
+          "<p>Query à la DB,afficher dans un tableau</p>".PHP_EOL;
+          break;
+  case chk_syst:
+      $varHTML .=
+          "<h2>État du système</h2>".PHP_EOL.
+          "<p>Trouver les Query nécessaires pour: Nom de la machine,
+          Mémoire vive totale vs utilisée, Espace disque totale vs utilisé,
+          état du processeur,afficher</p>".PHP_EOL;
+          break;
+  case quo_gest:
+      $varHTML .=
+          "<h2>Gestion des quotas</h2>".PHP_EOL.
+          "<p>Faire un premier formulaire avec 2 choix: 1. Voir les quotas
+          -->>Query DB et Unix,afficher 2. Modifier le quota -->> Formulaire avec
+          submit,Processus de validation,DB entry Unix entry</p>".PHP_EOL;
+          break;
+  case clr_sess:
+      $varHTML .=
+         "<h2>Confirmation de fermeture de session</h2>".PHP_EOL.
+         "<form action='./admin.php?menu=clr_sess' method='POST'>".PHP_EOL.
+			   "<input type='submit' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input>".PHP_EOL.
+         "<input type='submit' name ='ctrl_backMain' width='50px' value='Retour'</input>".PHP_EOL.
+			   "</form>".PHP_EOL;
+          break;
+  default:
+          break;
+ }
 }
 
-/*Génération de la Page Test de fonctions admin*/
-$varHTML = "<h1>Page Test de ". $_SESSION['username'] . "</h1>" . PHP_EOL;
+if( isset($_POST['ctrl_backMain']))
+{
+  header('Location: ./admin.php');
+}
 
-
-/*Vérification si les POST existent si oui on call la fonction authentification()*/
+if( isset($_POST['ctrl_nouvSess']))
+{
+  session_destroy();
+  header('Location: ./index.php');
+}
 
  ?>
 
@@ -48,6 +135,7 @@ $varHTML = "<h1>Page Test de ". $_SESSION['username'] . "</h1>" . PHP_EOL;
  <html>
    <head>
      <title>WEBPROJET</title>
+     <link rel="stylesheet" type="text/css" href="../css/styles.css">
    </head>
    <body>
      <?PHP echo $varHTML ?>

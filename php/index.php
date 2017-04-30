@@ -42,7 +42,7 @@ $varHTML = "<h1>Page d'authentification</h1>" . PHP_EOL
            . "<form method=\"POST\" action=\"index.php\">" . PHP_EOL
            . " </br> Login : <input type=\"text\" name=\"login\"/> </br></br>" . PHP_EOL
            . "Password : <input type=\"password\" name=\"password\"/> </br>" . PHP_EOL
-           . "</br> <input type=\"submit\" name=\"submit\" value=\"Connect biatch\"/>" . PHP_EOL
+           . "</br> <input type=\"submit\" name=\"submit\" value=\"Se connecter\"/>" . PHP_EOL
            . "</form>";
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
@@ -60,8 +60,8 @@ if (isset($_POST["login"]) && isset($_POST["password"])){
   {
     header('Location: ./user.php');
   }
-
 }
+
 
  ?>
 
@@ -70,6 +70,7 @@ if (isset($_POST["login"]) && isset($_POST["password"])){
 <html>
   <head>
     <title>WEBPROJET</title>
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
   </head>
   <body>
     <?PHP echo $varHTML ?>
