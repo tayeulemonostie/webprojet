@@ -38,8 +38,16 @@ catch(PDOExeption $e){
 
 /*Génération de la Page Test de fonctions admin*/
 $varHTML = "<h1>Bienvenue " . $_SESSION['username'] . " !" . "</h1>" . PHP_EOL;
+$varHTML .= "<div class='zoneMenu'>".PHP_EOL.
+    "<h2>Menu</h2>".PHP_EOL.
+    "<ul>".PHP_EOL.
+    "<li><a href=''>Changement de mot de passe</a></li>".PHP_EOL.
+    "<li><a href=''>Aperçu de votre quotas</a></li>".PHP_EOL.
+    "<li><a href=''>Fermer la session</a></li>".PHP_EOL.
+    "</ul>".PHP_EOL.
+"</div>".PHP_EOL;
 
-//$varQuota = quotaUser();
+$varQuota = quotaUser();
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
 
@@ -49,11 +57,13 @@ $varHTML = "<h1>Bienvenue " . $_SESSION['username'] . " !" . "</h1>" . PHP_EOL;
  <html>
    <head>
      <title>WEBPROJET</title>
+     <meta charset="UTF-8"/>
+     <link rel="stylesheet" type="text/css" href="../css/styles.css">
    </head>
    <body>
      <?PHP echo $varHTML ?>
-     <div>
-       <?PHP echo "ta mere" ?>
+     <div class="zoneContenu">
+       <?PHP echo $varQuota ?>
      </div>
    </body>
  </html>

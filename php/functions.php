@@ -182,10 +182,32 @@ function list_user ($bd)
   }
   return $contenuDiv;
 }
+
+
+
+/*=================== FONCTION POUR LE USER ===================*/
+
 /*fonction quota*/
-/*function quotaUser (){
-  $vartest = exec('whoiam');
-  return $vartest;
+function quotaUser (){
+  $varCommandeResult = exec('sudo quota corseb');
+  $varCommandeResult = preg_replace('/\s+/', ' ', $varCommandeResult);
+  $TabCommandeResultSplit = explode(" ", $varCommandeResult);
+  //commande de Débug
+  //print_r($TabCommandeResultSplit);
+
+  $varUserEspaceTotal = $TabCommandeResultSplit[4];
+  $varUserEspaceUtil = $TabCommandeResultSplit[5];
+
+  $varUserEspaceUtil = (double)$varUserEspaceUtil / (1024*1024);
+  $varUserEspaceTotal = (double)$varUserEspaceTotal / (1024*1024);
+
+  $varUserEspaceUtil = round($varUserEspaceUtil, 6);
+  $varQuotaUser = $varUserEspaceUtil . " Mb/" . $varUserEspaceTotal . " Mb utilisés.";
+  return $varQuotaUser;
 }
-*/
+
+function AfficherQuotaUtilisateur(){
+
+}
+
  ?>
