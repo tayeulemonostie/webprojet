@@ -133,7 +133,6 @@ else
  }
  $varHTML .=
  "</div>".PHP_EOL;
-
 }
 
 if(isset($_POST['ctrl_backMain']))
