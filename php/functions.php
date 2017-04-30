@@ -24,7 +24,7 @@ Elle retourne une réponse si le user est valide en fonction du password*/
 
 function authentification ($login, $password, $bd){
   $reponse = "";
-
+  $_SESSION['login'] = strtolower($login);
   /*request pour grab username password et usager_ID*/
   $reqUser = $bd->query("SELECT nom_utilisateur, user_password, usager_ID FROM Comptes WHERE nom_utilisateur=\"$login\" AND user_password=\"$password\";");
 
@@ -64,8 +64,7 @@ function authentification ($login, $password, $bd){
 /*La fonction prend en paramètre la Connection à la base de donnée
 Elle retourne un formulaire POST en contenu DIV */
 
-function create_user ($bd)
-{
+function create_user ($bd){
   $contenuDiv = "";
   $UserNumber = 0;
   $DeptCount = 0;
@@ -144,8 +143,7 @@ function create_user ($bd)
 Elle retourne une liste en contenu DIV que si on clique sur un user
 on peut modifier ses informations (mod_user)*/
 
-function list_user ($bd)
-{
+function list_user ($bd){
 
   $contenuDiv = "";
   $var_vect_User  = [];
@@ -189,6 +187,7 @@ function list_user ($bd)
 
 /*fonction quota*/
 function quotaUser (){
+  //$varNomUser = $_SESSION['login'];
   $varCommandeResult = exec('sudo quota corseb');
   $varCommandeResult = preg_replace('/\s+/', ' ', $varCommandeResult);
   $TabCommandeResultSplit = explode(" ", $varCommandeResult);
@@ -206,8 +205,5 @@ function quotaUser (){
   return $varQuotaUser;
 }
 
-function AfficherQuotaUtilisateur(){
-
-}
 
  ?>
