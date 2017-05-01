@@ -36,20 +36,39 @@ catch(PDOExeption $e){
   echo "CALISE la bd a pas connect... tien vla l'erreur : " . $e->getMessage();
 }
 
-/*Génération de la Page Test de fonctions admin*/
+/*Génération de la page d'utilisateur ordinaire*/
 $varHTML = "<h1>Bienvenue " . $_SESSION['username'] . " !" . "</h1>" . PHP_EOL;
 $varHTML .= "<div class='zoneMenu'>".PHP_EOL.
-    "<h2>Menu</h2>".PHP_EOL.
-    "<ul>".PHP_EOL.
-    "<li><a href=''>Changement de mot de passe</a></li>".PHP_EOL.
-    "<li><a href=''>Aperçu de votre quotas</a></li>".PHP_EOL.
-    "<li><a href=''>Fermer la session</a></li>".PHP_EOL.
-    "</ul>".PHP_EOL.
-"</div>".PHP_EOL;
+            "<h2>Menu</h2>".PHP_EOL.
+            "<ul>".PHP_EOL.
+            "<li><a href='./user.php'>Page d'Acceuil</a></li>".PHP_EOL.
+            "<li><a href=''>Changement de mot de passe</a></li>".PHP_EOL.
+            "<li><a href='./user.php?menu=contact_admin'>Contacter l'administrateur</a></li>".PHP_EOL.
+            "<li><a href='./user.php?menu=quota_user'>Aperçu de votre quotas</a></li>".PHP_EOL.
+            "<li><a href=''>Fermer la session</a></li>".PHP_EOL.
+            "</ul>".PHP_EOL.
+            "</div>".PHP_EOL;
 
-$varQuota = quotaUser();
+/*Génération Contenue de la Zone Contenue*/
+/*Acceuil par défault*/
+if (!isset($_GET['menu'])){
+  $varZoneContenue = "<h2>Tableau de Bord</h2>" . PHP_EOL .
+                     "<p>Bienvenue sur l'interface de Gestion SebYvesAdmin</p>" . PHP_EOL;
+}
+switch ($_GET['menu']) {
+  case 'quota_user':
+    $varZoneContenue = "<h2>Voici votre Quota disponible : </h2>" . PHP_EOL .
+                       "<p>" . quotaUser() . "</p>" . PHP_EOL;
+    break;
 
-/*Vérification si les POST existent si oui on call la fonction authentification()*/
+  case 'contact_admin':
+    $varZoneContenue = "<h2>Formulaire de contact de L'administrateur</h2>" . PHP_EOL;
+
+    break;
+  /*default:
+    # code...
+    break;*/
+}
 
  ?>
 
@@ -63,7 +82,7 @@ $varQuota = quotaUser();
    <body>
      <?PHP echo $varHTML ?>
      <div class="zoneContenu">
-       <?PHP echo $varQuota ?>
+       <?PHP echo $varZoneContenue ?>
      </div>
    </body>
  </html>

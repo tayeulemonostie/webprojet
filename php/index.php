@@ -56,6 +56,10 @@ if (isset($_POST["login"]) && isset($_POST["password"])){
   {
     header('Location: ./admin.php');
   }
+  elseif ($crisse == "expire")
+  {
+      $varHTML .= "</br></br>Votre mot de passe est expiré.";
+  }
   else
   {
     header('Location: ./user.php');

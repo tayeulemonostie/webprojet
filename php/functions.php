@@ -26,7 +26,7 @@ function authentification ($login, $password, $bd){
   $reponse = "";
   $_SESSION['login'] = strtolower($login);
   /*request pour grab username password et usager_ID*/
-  $reqUser = $bd->query("SELECT nom_utilisateur, user_password, usager_ID FROM Comptes WHERE nom_utilisateur=\"$login\" AND user_password=\"$password\";");
+  $reqUser = $bd->query("SELECT nom_utilisateur, user_password, usager_ID, expiration_password FROM Comptes WHERE nom_utilisateur=\"$login\" AND user_password=\"$password\";");
 
   /*permet de savoir si j'aa recu une reponse de la BD*/
   $count = $reqUser->rowCount();
@@ -35,26 +35,31 @@ function authentification ($login, $password, $bd){
   if (!($count)){
     $reponse = "non";
   } else {
+
     /*je rammase le résulat*/
     $tabUser = $reqUser->fetch(PDO::FETCH_ASSOC);
+    /*SI la date d'expiration de son password est la meme que aujourd'hui, impossible de logé*/
+    if($tabUser['expiration_password'] == date("Y-m-d")){
+      $reponse = "expire";
+    } else {
+      /*tu tableau, je récupère l'id de l'usager*/
+      $testing = $tabUser['usager_ID'];
 
-    /*tu tableau, je récupère l'id de l'usager*/
-    $testing = $tabUser['usager_ID'];
+      /*request pour déterminer dans quel departmemnent lusager ce trouve*/
+      $reqAdmin = $bd->query("SELECT departements_ID FROM Usagers_description WHERE usager_ID=$testing;");
+      $tabUserDep = $reqAdmin->fetch(PDO::FETCH_ASSOC);
 
-    /*request pour déterminer dans quel departmemnent lusager ce trouve*/
-    $reqAdmin = $bd->query("SELECT departements_ID FROM Usagers_description WHERE usager_ID=$testing;");
-    $tabUserDep = $reqAdmin->fetch(PDO::FETCH_ASSOC);
-
-    $reqUser = $bd->query("SELECT prenom FROM Usagers_description WHERE usager_ID=$testing;");
-    $nom_utilisateur = $reqUser->fetch(PDO::FETCH_ASSOC);
-      $_SESSION['username'] = $nom_utilisateur['prenom'];
-    /*si l'usager est en TI, il est administrateur*/
-    if ($tabUserDep['departements_ID'] == 4){
-      $reponse = "admin";
-    }
-    else {
-      /*S'il est toute sauf admin(TI)*/
-      $reponse = "user";
+      $reqUser = $bd->query("SELECT prenom FROM Usagers_description WHERE usager_ID=$testing;");
+      $nom_utilisateur = $reqUser->fetch(PDO::FETCH_ASSOC);
+        $_SESSION['username'] = $nom_utilisateur['prenom'];
+      /*si l'usager est en TI, il est administrateur*/
+      if ($tabUserDep['departements_ID'] == 4){
+        $reponse = "admin";
+      }
+      else {
+        /*S'il est toute sauf admin(TI)*/
+        $reponse = "user";
+      }
     }
   }
   return $reponse;
@@ -181,29 +186,41 @@ function list_user ($bd){
   return $contenuDiv;
 }
 
-
-
 /*=================== FONCTION POUR LE USER ===================*/
 
 /*fonction quota*/
 function quotaUser (){
-  //$varNomUser = $_SESSION['login'];
-  $varCommandeResult = exec('sudo quota corseb');
+  $varNomUser = $_SESSION['login'];
+  //commande Linux qui permet de voire les info de quota d'un utilisateur Particulié
+  $varCommandeResult = exec("sudo quota $varNomUser");
+  //Je reformate ce que la commande me sort pour seulement avoir UN espace en chaque donnés
   $varCommandeResult = preg_replace('/\s+/', ' ', $varCommandeResult);
+  //Split le résultat de la commande en plusieur string dans un tableau
   $TabCommandeResultSplit = explode(" ", $varCommandeResult);
+
   //commande de Débug
   //print_r($TabCommandeResultSplit);
 
+  //Je récupere seulement lespace total et utilisé de l'utilisateur
   $varUserEspaceTotal = $TabCommandeResultSplit[4];
   $varUserEspaceUtil = $TabCommandeResultSplit[5];
 
+  //Passage de Bytes en Mb pour la beauté de la chose
   $varUserEspaceUtil = (double)$varUserEspaceUtil / (1024*1024);
   $varUserEspaceTotal = (double)$varUserEspaceTotal / (1024*1024);
 
   $varUserEspaceUtil = round($varUserEspaceUtil, 6);
-  $varQuotaUser = $varUserEspaceUtil . " Mb/" . $varUserEspaceTotal . " Mb utilisés.";
+  //je véfifie si l'utilisateur à un quota
+  if ($varUserEspaceTotal == 0){
+    $varQuotaUser = "Vous n'avez pas de quota défini.";
+  } else {
+    $varQuotaUser = $varUserEspaceUtil . " Mb/" . $varUserEspaceTotal . " Mb utilisés.";
+  }
   return $varQuotaUser;
 }
 
-
+/*fonction Contactert administrateur*/
+function contactAdmin(){
+  /*VOIRE COMMENT FAIRE DU AJAX POUR CA*/
+}
  ?>
