@@ -45,7 +45,7 @@ $varHTML .= "<div class='zoneMenu'>".PHP_EOL.
             "<li><a href=''>Changement de mot de passe</a></li>".PHP_EOL.
             "<li><a href='./user.php?menu=contact_admin'>Contacter l'administrateur</a></li>".PHP_EOL.
             "<li><a href='./user.php?menu=quota_user'>Aperçu de votre quotas</a></li>".PHP_EOL.
-            "<li><a href=''>Fermer la session</a></li>".PHP_EOL.
+            "<li><a href='./user.php?menu=clr_sess'>Fermer la session</a></li>".PHP_EOL.
             "</ul>".PHP_EOL.
             "</div>".PHP_EOL;
 
@@ -60,14 +60,29 @@ switch ($_GET['menu']) {
     $varZoneContenue = "<h2>Voici votre Quota disponible : </h2>" . PHP_EOL .
                        "<p>" . quotaUser() . "</p>" . PHP_EOL;
     break;
-
   case 'contact_admin':
-    $varZoneContenue = "<h2>Formulaire de contact de L'administrateur</h2>" . PHP_EOL;
-
+    $varZoneContenue = "<h2>Formulaire de contact de L'administrateur</h2>" . PHP_EOL .
+                        contactAdmin() . PHP_EOL;
+    break;
+  case 'clr_sess':
+    $varZoneContenue = "<h2>Confirmation la fermeture de session</h2>".PHP_EOL.
+    "<form action='./user.php?menu=clr_sess' method='POST'>".PHP_EOL.
+    "<input type='submit' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input>".PHP_EOL.
+    "<input type='submit' name ='ctrl_backMain' width='50px' value='Retour'</input>".PHP_EOL.
+    "</form>".PHP_EOL;
     break;
   /*default:
     # code...
     break;*/
+}
+/*pour la fermeture de session*/
+if(isset($_POST['ctrl_backMain'])){
+  header('Location: ./user.php');
+}
+
+ if(isset($_POST['ctrl_nouvSess'])) {
+  session_destroy();
+  header('Location: ./index.php');
 }
 
  ?>

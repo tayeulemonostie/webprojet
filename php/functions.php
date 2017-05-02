@@ -230,17 +230,14 @@ function conf_create ($bd){
 pousser les query vers Linux et la base de donnée*/
 
 function add_user_Unix_DB ($bd){
-
 /*requests pour insérer dans la DB */
+  $bd->query("INSERT INTO Usagers_description (usager_ID, nom, prenom, no_tel_poste, no_tel_dom, no_machine, departements_ID, quota)
+              VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['nom']."', '".$_SESSION['prenom']."', '".$_SESSION['no_tel_poste']."',
+                '".$_SESSION['no_tel_dom']."', '".$_SESSION['no_machine']."', '".$_SESSION['departements_ID']."', '".$_SESSION['quota']."')");
 
-$bd->query("INSERT INTO Usagers_description (usager_ID, nom, prenom, no_tel_poste, no_tel_dom, no_machine, departements_ID, quota)
-            VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['nom']."', '".$_SESSION['prenom']."', '".$_SESSION['no_tel_poste']."',
-              '".$_SESSION['no_tel_dom']."', '".$_SESSION['no_machine']."', '".$_SESSION['departements_ID']."', '".$_SESSION['quota']."')");
-
-$bd->query("INSERT INTO Comptes (compte_ID, usager_ID, nom_utilisateur, user_password, expiration_password)
-            VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
-              '".$_SESSION['expiration_password']."')");
-
+  $bd->query("INSERT INTO Comptes (compte_ID, usager_ID, nom_utilisateur, user_password, expiration_password)
+              VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
+                '".$_SESSION['expiration_password']."')");
 }
 /*===FONCTION LISTER LES UTILISATEUR===*/
 /*La fonction prend en paramètre la Connection à la base de donnée
@@ -320,5 +317,10 @@ function quotaUser (){
 /*fonction Contactert administrateur*/
 function contactAdmin(){
   /*VOIRE COMMENT FAIRE DU AJAX POUR CA*/
+  $varFormulaire = "<form action='./user.php' method='POST'>" . PHP_EOL .
+                   "<label for='objet'>Objet : </label>" . PHP_EOL .
+                   "<input type='text' name='objet' id='objet' size='80'></input>" . PHP_EOL .
+                   "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>" . PHP_EOL;
+  return $varFormulaire;
 }
  ?>
