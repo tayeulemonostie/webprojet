@@ -54,6 +54,7 @@ function authentification ($login, $password, $bd){
         $_SESSION['username'] = $nom_utilisateur['prenom'];
       /*si l'usager est en TI, il est administrateur*/
       if ($tabUserDep['departements_ID'] == 4){
+        $_SESSION['departement'] = $tabUserDep['departements_ID'];
         $reponse = "admin";
       }
       else {
@@ -77,9 +78,8 @@ function create_user ($bd){
   $var_IndiceChamp = 0;
   $var_i = 1;
   $var_ValChamp    = "";
-  unset($_POST);
 
-  /*request 1. compte les user 2. compte les dept 3. liste des dept*/
+  /*request 1. compte les user 2. liste des dept*/
   $req_1 = $bd->query("SELECT * FROM Usagers_description");
   $req_2 = $bd->query("SELECT nom_departement FROM Departements");
 
@@ -96,6 +96,12 @@ function create_user ($bd){
             "<input type='text' id='fname' name='fname' maxlength='25'></input></td>".PHP_EOL.
             "<td><label for='name'>Prénom</label>".PHP_EOL.
             "<input type='text' id='name' name='name' maxlength='25'></input></td>".PHP_EOL.
+          "</tr>".PHP_EOL.
+          "<tr>".PHP_EOL.
+            "<td><label for='notel'># d'utilisateur</label>".PHP_EOL.
+            "<input type='text' id='notel' name='notel' maxlength='2' disabled='disabled' placeholder='".$UserNumber."'></input></td>".PHP_EOL.
+            "<td><label for='notel'># de tél.(domicile)</label>".PHP_EOL.
+            "<input type='text' id='notel' name='notel' maxlength='12' placeholder='999-999-9999'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr>".PHP_EOL.
             "<td><label for='poste'># de poste téléphonique</label>".PHP_EOL.
@@ -136,12 +142,105 @@ function create_user ($bd){
             "<td align='right'>".PHP_EOL.
             "<input type='reset' name='cancelForm' value='Annuler'></input></td>".PHP_EOL.
             "<td>".PHP_EOL.
-            "<input type='Submit' name='submit1' value='Soumettre'></input></td>".PHP_EOL.
+            "<input type='Submit' name='submitCreate' value='Soumettre'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
         "</table>".PHP_EOL.
       "</form>".PHP_EOL;
 
     return $contenuDiv;
+}
+/*===FONCTION CONFIRME LE NOUVEL UTILISATEUR===*/
+
+/*La fonction prend en paramètre la Connection à la base de donnée
+Elle recoit les valeur POST les stock puis affiche en contenu DIV */
+
+function conf_create ($bd){
+  $contenuDiv = "";
+  $UserNumber = 0;
+  $varDept = $_POST['dept'];
+
+  $in90daysTMP = mktime(0, 0, 0, date("m")  , date("d")+90, date("Y"));
+  $in90days = date("Y-m-d",$in90daysTMP);
+
+  /*request compte les user*/
+  $req_1 = $bd->query("SELECT * FROM Usagers_description");
+  /*request pour afficher le département*/
+  $req_2 = $bd->query("SELECT nom_departement FROM Departements WHERE departements_ID=".$varDept."");
+  /*compte les user + 1 pour donner le user_ID*/
+  $UserNumber = ($req_1->rowCount())+1;
+  /*va permettre d'afficher le nom et non le ID du département*/
+  $nomDept = $req_2->fetch(PDO::FETCH_ASSOC);
+
+  $contenuDiv =
+      "<table cellpadding='10px'>".PHP_EOL.
+          "<tr>".PHP_EOL.
+            "<td><label>Nom de famille: </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['fname']."</label></td>".PHP_EOL.
+            "<td><label>Prénom: </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['name']."</label></td>".PHP_EOL.
+          "</tr>".PHP_EOL.
+          "<tr>".PHP_EOL.
+            "<td><label># d'utilisateur: </label>".PHP_EOL.
+            "<label class='bolddown'>".$UserNumber."</label></td>".PHP_EOL.
+            "<td><label># de tél.(domicile): </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['notel']."</label></td>".PHP_EOL.
+          "</tr>".PHP_EOL.
+          "<tr>".PHP_EOL.
+            "<td><label># de poste téléphonique: </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['poste']."</label></td>".PHP_EOL.
+            "<td><label># de machine: </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['machine']."</label></td>".PHP_EOL.
+          "</tr>".PHP_EOL.
+          "<tr>".PHP_EOL.
+            "<td><label>Nom d'utilisateur: </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['newuser']."</label></td>".PHP_EOL.
+            "<td><label>Mot de passe: </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['tamere']."</label></td>".PHP_EOL.
+          "</tr>".PHP_EOL.
+          "<tr>".PHP_EOL.
+            "<td><label>Nom du département: </label>".PHP_EOL.
+            "<label class='bolddown'>".$nomDept['nom_departement']."</label></td>".PHP_EOL.
+            "<td><label>Taille du quota (Go): </label>".PHP_EOL.
+            "<label class='bolddown'>".$_POST['quot']."</label></td>".PHP_EOL.
+          "</tr>".PHP_EOL.
+        "</table>".PHP_EOL;
+        /* STOCKER LES VALEURS POST EN SESSION POUR LES UTILISER LORS DE LA QUERY */
+        /*Pour Usagers_description*/
+        $_SESSION['usager_ID'] = $UserNumber;
+        $_SESSION['nom'] = $_POST['fname'];
+        $_SESSION['prenom'] = $_POST['name'];
+        $_SESSION['no_tel_poste'] = $_POST['poste'];
+        $_SESSION['no_tel_dom'] = $_POST['notel'];
+        $_SESSION['no_machine'] = $_POST['machine'];
+        $_SESSION['departements_ID'] = $_POST['dept'];
+        $_SESSION['quota'] = $_POST['quot'];
+        /*Pour Comptes*/
+        $_SESSION['compte_ID'] = $UserNumber;
+        $_SESSION['nom_utilisateur'] = $_POST['newuser'];
+        $_SESSION['user_password'] = $_POST['tamere'];
+        $_SESSION['expiration_password'] = $in90days;
+
+        $_SESSION['ChangeData'] = True;
+
+    return $contenuDiv;
+}
+/*===FONCTION AJOUTER UN UTILISATEUR LINUX ET DANS LA DB===*/
+/*La fonction prend en paramètre la Connection à la base de donnée
+À ce stade-ci les données sont validées, donc il ne s'agit que de
+pousser les query vers Linux et la base de donnée*/
+
+function add_user_Unix_DB ($bd){
+
+/*requests pour insérer dans la DB */
+
+$bd->query("INSERT INTO Usagers_description (usager_ID, nom, prenom, no_tel_poste, no_tel_dom, no_machine, departements_ID, quota)
+            VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['nom']."', '".$_SESSION['prenom']."', '".$_SESSION['no_tel_poste']."',
+              '".$_SESSION['no_tel_dom']."', '".$_SESSION['no_machine']."', '".$_SESSION['departements_ID']."', '".$_SESSION['quota']."')");
+
+$bd->query("INSERT INTO Comptes (compte_ID, usager_ID, nom_utilisateur, user_password, expiration_password)
+            VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
+              '".$_SESSION['expiration_password']."')");
+
 }
 /*===FONCTION LISTER LES UTILISATEUR===*/
 /*La fonction prend en paramètre la Connection à la base de donnée
@@ -185,7 +284,6 @@ function list_user ($bd){
   }
   return $contenuDiv;
 }
-
 /*=================== FONCTION POUR LE USER ===================*/
 
 /*fonction quota*/

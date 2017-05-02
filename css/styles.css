@@ -44,3 +44,10 @@ h1 {
   vertical-align: top;
   margin: 10px;
 }
+
+/*CLASSE de texte en gras aligné à droite*/
+.bolddown {
+  display:block;
+  font-weight: bold;
+  font-size: 30px;
+}
