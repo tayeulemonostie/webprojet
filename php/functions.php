@@ -14,7 +14,8 @@
 /*Démarage de session*/
 session_start();
 
-/*Déclaration de variable*/
+require "class.phpmailer.php";
+require "class.smtp.php";
 
 
 /*===FONCTION D'AUTHENTIFICATION===*/
@@ -317,10 +318,41 @@ function quotaUser (){
 /*fonction Contactert administrateur*/
 function contactAdmin(){
   /*VOIRE COMMENT FAIRE DU AJAX POUR CA*/
-  $varFormulaire = "<form action='./user.php' method='POST'>" . PHP_EOL .
+  $varFormulaire = "<form action='./user.php?menu=contact_admin' method='POST'>" . PHP_EOL .
                    "<label for='objet'>Objet : </label>" . PHP_EOL .
                    "<input type='text' name='objet' id='objet' size='80'></input>" . PHP_EOL .
-                   "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>" . PHP_EOL;
+                   "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>" . PHP_EOL .
+                   "<input type='submit' name='ctrl_envoi_mail' width='50px' value='Envoyer'></input>" . PHP_EOL;
   return $varFormulaire;
+}
+
+function mailtoadmin($sujet, $message){
+  $mail = new PHPMailer();
+  $mail->IsSMTP(); // send via SMTP
+  $mail->SMTPAuth = true; // turn on SMTP authentication
+  $mail->Username = "websebyves@gmail.com"; // Enter your SMTP username
+  $mail->Password = "Tabarnak2017"; // SMTP password
+  $webmaster_email = "websebyves@gmail.com"; //Add reply-to email address
+  $email="devaster.64@gmail.com"; // Add recipients email address
+  $name="Yves"; // Add Your Recipient’s name
+  $mail->From = $webmaster_email;
+  $mail->FromName = "Webmaster";
+  $mail->AddAddress($email,$name);
+  $mail->AddReplyTo($webmaster_email,"Webmaster");
+  //$mail->WordWrap = "<strong>50</strong>"; // set word wrap
+  //$mail->AddAttachment("/var/tmp/file.tar.gz"); // attachment
+  //$mail->AddAttachment("/tmp/image.jpg”, “new.jpg"); // attachment
+  $mail->IsHTML(true); // send as HTML
+
+  $mail->Subject = $sujet;
+
+  $mail->Body = $message;      //HTML Body
+  //$mail->SMTPDebug = 2;
+  $mail->AltBody = $message;     //Plain Text Body
+  if(!$mail->Send()){
+    echo "Mailer Error: " . $mail->ErrorInfo;
+  } else {
+    echo "Message has been sent";
+  }
 }
  ?>
