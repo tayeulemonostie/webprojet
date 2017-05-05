@@ -22,20 +22,6 @@ session_start();
 /*===== section link php ======*/
 require "functions.php";
 
-/*Déclaraton de variables*/
-global $bd;
-
-/*c'est icitte crisse que je connect ma bite dans les données*/
-try {
-  $bd = new PDO("mysql:host=localhost;dbname=webprojet", "root", "root");
-  /*activer les exeptions en cas d'erreur */
-  $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  //echo "La BD du projet est connectée TABARNAK !!!";
-}
-catch(PDOExeption $e){
-  echo "CALISE la bd a pas connect... tien vla l'erreur : " . $e->getMessage();
-}
-
 /*Génération de la page d'utilisateur ordinaire*/
 $varHTML = "<h1>Bienvenue " . $_SESSION['username'] . " !" . "</h1>" . PHP_EOL;
 $varHTML .= "<div class='zoneMenu'>".PHP_EOL.

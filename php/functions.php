@@ -16,7 +16,15 @@ session_start();
 
 require "class.phpmailer.php";
 require "class.smtp.php";
+/*Déclaration de variable*/
+/* Base de données */
+define ("cst_JeuCaracBD"                  , "utf8");
+define ("cst_JeuCaracBD_ReglesComparaison", "utf8_bin");
 
+define ("cst_MySQLServeur" , "localhost");
+define ("cst_MySQLCompte"  , "root");
+define ("cst_MySQLMotPasse", "root");
+define ("cst_MySQLBD"      , "webprojet");
 
 /*===FONCTION D'AUTHENTIFICATION===*/
 /*La fonction prend en paramètre les variable POST login et password entrer
@@ -66,6 +74,7 @@ function authentification ($login, $password, $bd){
   }
   return $reponse;
 }
+
 /*===FONCTION FORMULAIRE NOUVEL UTILISATEUR===*/
 
 /*La fonction prend en paramètre la Connection à la base de donnée
@@ -74,22 +83,11 @@ Elle retourne un formulaire POST en contenu DIV */
 function create_user ($bd){
   $contenuDiv = "";
   $UserNumber = 0;
-  $DeptCount = 0;
-  $var_vect_Dept  = [];
-  $var_IndiceChamp = 0;
-  $var_i = 1;
-  $var_ValChamp    = "";
-
-  /*request 1. compte les user 2. liste des dept*/
+  /*request compte les user */
   $req_1 = $bd->query("SELECT * FROM Usagers_description");
-  $req_2 = $bd->query("SELECT nom_departement FROM Departements");
-
   /*compte les user + 1 pour donner le user_ID*/
   $UserNumber = ($req_1->rowCount())+1;
-  /*compte les dept pour la taille de la liste*/
-  $DeptCount = $req_2->rowCount();
-
-    $contenuDiv =
+  $contenuDiv =
     "<form method='POST' ACTION='./admin.php?menu=conf_page'>".PHP_EOL.
       "<table cellpadding='10px'>".PHP_EOL.
           "<tr>".PHP_EOL.
@@ -118,23 +116,10 @@ function create_user ($bd){
           "</tr>".PHP_EOL.
           "<tr>".PHP_EOL.
             "<td><label for='dept'>Nom du département</label>".PHP_EOL;
-
             //Construction dynamique de la liste des départements
+      $contenuDiv .= Generate_Dept($bd);
+            //Retour à la création du formulaire
       $contenuDiv .=
-              "<select name='dept' id='dept' size=".$DeptCount."'>".PHP_EOL;
-            //Tant que tu as des départements, créer une option
-      while($var_vect_Dept = $req_2->fetch(PDO::FETCH_ASSOC))
-      {
-        foreach($var_vect_Dept as $var_IndiceChamp => $var_ValChamp)
-        {
-          $contenuDiv .=
-          "<option value='".($var_IndiceChamp+$var_i)."'>".$var_ValChamp."</option>".PHP_EOL;
-          $var_i++;
-        }
-      }
-          //fermeture du select et on termine le formulaire
-      $contenuDiv .=
-              "</select>".PHP_EOL.
             "</td>".PHP_EOL.
             "<td><label for='quot'>Taille du quota (Go)</label>".PHP_EOL.
             "<input type='text' id='quot' name='quot' maxlength='2'></input></td>".PHP_EOL.
@@ -160,8 +145,8 @@ function conf_create ($bd){
   $UserNumber = 0;
   $varDept = $_POST['dept'];
 
-  $in90daysTMP = mktime(0, 0, 0, date("m")  , date("d")+90, date("Y"));
-  $in90days = date("Y-m-d",$in90daysTMP);
+  //$in90daysTMP = mktime(0, 0, 0, date("m")  , date("d")+90, date("Y"));
+  //$in90days = date("Y-m-d",$in90daysTMP);
 
   /*request compte les user*/
   $req_1 = $bd->query("SELECT * FROM Usagers_description");
@@ -219,11 +204,23 @@ function conf_create ($bd){
         $_SESSION['compte_ID'] = $UserNumber;
         $_SESSION['nom_utilisateur'] = $_POST['newuser'];
         $_SESSION['user_password'] = $_POST['tamere'];
-        $_SESSION['expiration_password'] = $in90days;
+        //$_SESSION['expiration_password'] = $in90days;
 
         $_SESSION['ChangeData'] = True;
 
     return $contenuDiv;
+}
+/*===FONCTION CONFIRME LE NOUVEL UTILISATEUR===*/
+
+/*La fonction prend en paramètre la Connection à la base de donnée
+Elle recoit les valeur POST les stock puis affiche en contenu DIV */
+
+function conf_modify ($bd){
+  print_r($_POST);
+  $contenuDiv = "<h2>Voyons voir les valeurs post transmise<h2>";
+  /* STOCKER LES VALEURS POST EN SESSION POUR LES UTILISER LORS DE LA QUERY */
+  $_SESSION['ChangeData'] = True;
+  return $contenuDiv;
 }
 /*===FONCTION AJOUTER UN UTILISATEUR LINUX ET DANS LA DB===*/
 /*La fonction prend en paramètre la Connection à la base de donnée
@@ -238,7 +235,7 @@ function add_user_Unix_DB ($bd){
 
   $bd->query("INSERT INTO Comptes (compte_ID, usager_ID, nom_utilisateur, user_password, expiration_password)
               VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
-                '".$_SESSION['expiration_password']."')");
+                'now() + INTERVAL 90 DAY')");
 }
 /*===FONCTION LISTER LES UTILISATEUR===*/
 /*La fonction prend en paramètre la Connection à la base de donnée
@@ -273,7 +270,10 @@ function list_user ($bd){
       foreach($var_vect_User as $var_IndiceChamp => $var_ValChamp)
       {
         $contenuDiv .=
-        "<li><a href='./admin.php?menu=mod_user&user=".($var_IndiceChamp+$var_i)."'>".$var_ValChamp."</a></li>".PHP_EOL;
+        "<div><li><a href='./admin.php?menu=mod_user&user=".($var_IndiceChamp+$var_i).
+        "'>".$var_ValChamp."</a></li></div>".PHP_EOL;
+        $contenuDiv .= "<div>".PHP_EOL;
+        $contenuDiv .= Generate_User($var_IndiceChamp+$var_i);
         $var_i++;
       }
     }
@@ -281,6 +281,196 @@ function list_user ($bd){
     $contenuDiv .= "</ul>".PHP_EOL;
   }
   return $contenuDiv;
+}
+/*===FONCTION GÉNÉRER UN UTILISATEUR===*/
+
+/*La fonction prend en paramètre le usager_ID
+Elle retourne un tableau avec les détails de l'utilisateur */
+
+function Generate_User($usager_ID)
+{
+/*Variable générale*/
+$contenu = "";
+/*Variables de manipulations bd*/
+$var_Requete = "SELECT nom_utilisateur AS 'Utilisateur',
+                       user_password AS 'Mot de passe',
+                       expiration_password AS 'Expiration',
+                       no_tel_dom AS '# de tél.(domicile)',
+                       no_tel_poste AS '# de poste téléphonique',
+                       no_machine AS '# de machine',
+                       nom_departement AS 'Nom du département',
+                       quota AS 'Taille du quota (Go)'
+                FROM Usagers_description
+                JOIN webprojet.Departements ON Departements.departements_ID=Usagers_description.departements_ID
+                JOIN webprojet.Comptes ON Comptes.usager_ID=Usagers_description.usager_ID
+                WHERE Comptes.usager_ID=$usager_ID";
+$obj_ResutatReq  = NULL;
+$obj_InfoChamp   = NULL;
+$var_vect_UnEnr  = [];  // Vecteur représentant la req. principale
+$var_IndiceChamp = 0; // sert dans le for each ligne de la req. principale
+$var_ValChamp    = "";
+/* CONNEXION À LA BASE DE DONNÉES*/
+/* Création d'un pointeur sur la BD */
+$bd = new mysqli( cst_MySQLServeur, cst_MySQLCompte, cst_MySQLMotPasse, cst_MySQLBD );
+/* Gestion des erreurs de connexion */
+if ($bd->connect_errno)
+{
+   echo "Echec de connexion à la BD ". cst_MySQLBD . " , Err: " . $obj_BD->connect_error;
+   exit;
+}
+/* Ajustement du format des transactions par défaut entre le client et la BD */
+$bd->query ("SET NAMES         '".cst_JeuCaracBD."' COLLATE '".cst_JeuCaracBD_ReglesComparaison."'");
+$bd->query ("SET CHARACTER_SET '".cst_JeuCaracBD."'");
+// Exécution de la requête
+$obj_ResutatReq = $bd->query($var_Requete);
+//Créer l'entête du tableau
+$contenu .= "<table class='UserDetails'>" . PHP_EOL . "<tr>" . PHP_EOL;
+
+  while($obj_InfoChamp = $obj_ResutatReq->fetch_field())
+  {
+    // Info d'entête.
+    $contenu .= "<th class='UserDetails'>".$obj_InfoChamp->name ."</th>" . PHP_EOL;
+  }
+  $contenu .= "</tr>". PHP_EOL;
+//Ajouter les informations dans une rangée
+  $contenu .= "<tr>" . PHP_EOL;
+  while($var_vect_UnEnr = $obj_ResutatReq->fetch_array(MYSQLI_NUM))
+    {
+      // Récupération des informations de chaque champ dans une cellule
+      foreach($var_vect_UnEnr as $var_IndiceChamp => $var_ValChamp)
+		    {
+		        $contenu .= "<td class='UserDetails'>".$var_ValChamp."</td>". PHP_EOL;
+		    }
+    }
+    // Fermeture de la rangée et de la table
+    $contenu .= "</tr>".PHP_EOL."</table>";
+return $contenu;
+}
+/*===FONCTION GÉNÉRER LES DÉPARTEMENTS===*/
+
+/*Elle retourne une liste à option  */
+
+function Generate_Dept($bd)
+{
+/*Variable générale*/
+$contenuDiv = "";
+$DeptCount = 0;
+$var_vect_Dept  = [];
+$var_IndiceChamp = 0;
+$var_i = 1;
+$var_ValChamp    = "";
+/*request liste des dept*/
+$req_1 = $bd->query("SELECT nom_departement FROM Departements");
+/*compte les dept pour la taille de la liste*/
+$DeptCount = $req_1->rowCount();
+//Construction dynamique de la liste des départements
+$contenuDiv .=
+  "<select name='dept' id='dept' size=".$DeptCount."'>".PHP_EOL;
+//Tant que tu as des départements, créer une option
+while($var_vect_Dept = $req_1->fetch(PDO::FETCH_ASSOC))
+{
+foreach($var_vect_Dept as $var_IndiceChamp => $var_ValChamp)
+{
+$contenuDiv .=
+"<option value='".($var_IndiceChamp+$var_i)."'>".$var_ValChamp."</option>".PHP_EOL;
+$var_i++;
+}
+}
+//fermeture du select
+$contenuDiv .=
+  "</select>".PHP_EOL;
+return $contenuDiv;
+}
+/*===FONCTION FORMULAIRE MODIFIER UTILISATEUR===*/
+
+/*La fonction prend en paramètre la Connection à la base de donnée
+Elle retourne un formulaire POST en contenu DIV */
+
+function mod_user ($bd){
+  $contenuDiv = "";
+  $UserNumber = 0;
+  $UserCount = 0;
+  $var_vect_User  = [];
+  $var_IndiceChamp = 0;
+  $var_i = 1;
+  $var_ValChamp    = "";
+  $tempo = 0;
+
+  /*request 1. sort les utilisateurs */
+  $req_1 = $bd->query("SELECT CONCAT(prenom,' ',nom) FROM Usagers_description");
+  /*compte les user + 1 pour donner le user_ID*/
+  $UserCount = ($req_1->rowCount())+1;
+
+    $contenuDiv =
+    "<form method='POST' ACTION='./admin.php?menu=confUserMod_page'>".PHP_EOL.
+      "<table cellpadding='10px'>".PHP_EOL.
+          "<tr class='ModifyTop'>".PHP_EOL.
+            "<td><label for='dept' class='ModifyTop'>Utilisateur à modifier: </label>".PHP_EOL;
+            //Construction dynamique de la liste des utilisateurs
+      $contenuDiv .=
+              "<select name='user' id='user' size=".$UserCount."'>".PHP_EOL;
+            //Tant que tu as des utilisateurs, créer une option
+      while($var_vect_User = $req_1->fetch(PDO::FETCH_ASSOC))
+      {
+        foreach($var_vect_User as $var_IndiceChamp => $var_ValChamp)
+        {
+          //SI l'administrateur a cliqué sur le nom de l'utilisateur à partir de la liste
+          if ((isset($_GET['user']) && ($_GET['user'] == $var_IndiceChamp+$var_i)))
+          {
+            $contenuDiv .=
+            "<option value='".($var_IndiceChamp+$var_i)."' selected='selected'>".$var_ValChamp."</option>".PHP_EOL;
+          }
+          else
+          {
+            $contenuDiv .=
+            "<option value='".($var_IndiceChamp+$var_i)."'>".$var_ValChamp."</option>".PHP_EOL;
+          }
+          $var_i++;
+        }
+      }
+          //fermeture du select et on termine le formulaire
+      $contenuDiv .=
+              "</select>".PHP_EOL.
+            "</td>".PHP_EOL.
+            "<td><label for='dept' class='ModifyTop'>Info à modifier: </label>".PHP_EOL.
+            "<select name='infoTag' id='infoTag' onclick='tayeule()' size='7'>".PHP_EOL.
+            "<option value='1'>Nom de famille</option>".PHP_EOL.
+            "<option value='2'>Prénom</option>".PHP_EOL.
+            "<option value='3'># de tél.(domicile)</option>".PHP_EOL.
+            "<option value='4'># de poste téléphonique</option>".PHP_EOL.
+            "<option value='5'># de machine</option>".PHP_EOL.
+            "<option value='6'>Nom d'utilisateur</option>".PHP_EOL;
+            if (isset($_GET['deptFlag']))
+            {
+              $contenuDiv .= "<option value='7' selected='selected'>";
+            }
+            else
+            {
+              $contenuDiv .= "<option value='7'>";
+            }
+            $contenuDiv .=
+            "Nom du département</option>".PHP_EOL.
+            "</select>".PHP_EOL.
+            "</td>".PHP_EOL.
+            "<td valign='top' id='infoTagTD'>";
+            if (isset($_GET['deptFlag']))
+            {
+              $contenuDiv .=
+              "<label for='infoMod' class='ModifyTop'>Nouveau département: </label>";
+              $contenuDiv .= Generate_Dept($bd);
+            }
+            $contenuDiv .=
+            "</td>".PHP_EOL.
+            "</tr>".PHP_EOL.
+            "<tr display='inline-block'>".PHP_EOL.
+            "<td valign='top'>".PHP_EOL.
+            "<input type='submit' name='ctrl_backMain' value='Annuler'></input>".PHP_EOL.
+            "<input type='Submit' name='submitModUser' value='Soumettre'></input></td>".PHP_EOL.
+          "</tr>".PHP_EOL.
+        "</table>".PHP_EOL.
+      "</form>".PHP_EOL;
+
+    return $contenuDiv;
 }
 /*=================== FONCTION POUR LE USER ===================*/
 

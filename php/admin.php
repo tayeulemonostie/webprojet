@@ -84,12 +84,12 @@ if (isset($_SESSION['username']))
           $varHTML .=
               "<h2>Ajouter un utilisateur</h2>".PHP_EOL;
           $varHTML .=
-            create_user($bd);
-            break;
+              create_user($bd);
+              break;
       case 'mod_user':
           $varHTML .=
               "<h2>Modifier un utilisateur</h2>".PHP_EOL.
-              "<p>Formulaire avec submit,Processus de validation,DB alter</p>".PHP_EOL;
+              mod_user($bd);
               break;
       case 'pwd_chng':
           $varHTML .=
@@ -134,6 +134,16 @@ if (isset($_SESSION['username']))
              print_r($_SESSION);
              "</form>".PHP_EOL;
               break;
+      case 'confUserMod_page':
+          $varHTML .=
+            "<h2>Confirmation des changements à la base de donnée</h2>".PHP_EOL;
+              $varHTML .= conf_modify();
+              $varHTML .=
+              "<form action='./admin.php?menu=mod_todo' method='POST'>".PHP_EOL.
+              "<input type='submit' name ='ctrl_modUser' width='50px' value='Ajouter'</input>".PHP_EOL.
+              /*"<input type='submit' name ='ctrl_backMain' width='50px' value='Annuler'</input>".PHP_EOL.*/
+              "</form>".PHP_EOL;
+              break;
       case 'user_todo':
           if ($_SESSION['ChangeData'] == True)
           {
@@ -148,7 +158,6 @@ if (isset($_SESSION['username']))
           {
             header('Location: ./admin.php?menu=add_user');
           }
-
           break;
       default:
               break;
@@ -188,6 +197,7 @@ else
      <title>WEBPROJET</title>
      <meta charset="UTF-8"/>
      <link rel="stylesheet" type="text/css" href="../css/styles.css">
+     <script type="text/javascript" src="../js/function.js"></script>
    </head>
    <body>
      <?PHP echo $varHTML ?>

@@ -23,7 +23,6 @@ session_start();
 require "functions.php";
 
 /*Déclaraton de variables*/
-global $bd;
 
 /*c'est icitte crisse que je connect ma bite dans les données*/
 try {
@@ -35,6 +34,7 @@ try {
 catch(PDOExeption $e){
   echo "CALISE la bd a pas connect... tien vla l'erreur : " . $e->getMessage();
 }
+$_SESSION['bd'] = $bd;
 
 /*Génération de la Page Test de fonctions login*/
 $varHTML = "<h1>Page d'authentification</h1>" . PHP_EOL
@@ -47,7 +47,7 @@ $varHTML = "<h1>Page d'authentification</h1>" . PHP_EOL
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
 if (isset($_POST["login"]) && isset($_POST["password"])){
-  $crisse = authentification($_POST["login"], $_POST["password"], $bd);
+  $crisse = authentification($_POST["login"], $_POST["password"], $_SESSION['bd']);
   if ($crisse == "non")
   {
    $varHTML .= "</br></br>L'utilisateur et/ou le mot de passe n'existe pas";
