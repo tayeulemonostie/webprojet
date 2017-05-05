@@ -63,6 +63,9 @@ switch ($_GET['menu']) {
   case 'contact_admin':
     $varZoneContenue = "<h2>Formulaire de contact de L'administrateur</h2>" . PHP_EOL .
                         contactAdmin() . PHP_EOL;
+    if(isset($_POST['objet']) && $_POST['message']){
+      mailtoadmin($_POST['objet'], $_POST['message']);
+    }
     break;
   case 'clr_sess':
     $varZoneContenue = "<h2>Confirmation la fermeture de session</h2>".PHP_EOL.
