@@ -50,7 +50,7 @@ switch ($_GET['menu']) {
     $varZoneContenue = "<h2>Formulaire de contact de L'administrateur</h2>" . PHP_EOL .
                         contactAdmin() . PHP_EOL;
     if(isset($_POST['objet']) && $_POST['message']){
-      mailtoadmin($_POST['objet'], $_POST['message']);
+        mailtoadmin($_POST['objet'], $_POST['message']);
     }
     break;
   case 'clr_sess':

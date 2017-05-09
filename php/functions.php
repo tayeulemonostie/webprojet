@@ -208,6 +208,9 @@ function conf_create ($bd){
 
         $_SESSION['ChangeData'] = True;
 
+
+/*=========SECTION POUR CRÉE LE USER SUR LINUX========*/
+
     return $contenuDiv;
 }
 /*===FONCTION CONFIRME LE NOUVEL UTILISATEUR===*/
@@ -235,7 +238,10 @@ function add_user_Unix_DB ($bd){
 
   $bd->query("INSERT INTO Comptes (compte_ID, usager_ID, nom_utilisateur, user_password, expiration_password)
               VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
-                'now() + INTERVAL 90 DAY')");
+                '".$_SESSION['expiration_password']."')");
+  /*section pour UNIX*/
+  exec("sudo useradd ".$_SESSION['nom_utilisateur']." -p ".$_SESSION['user_password']." -m");
+
 }
 /*===FONCTION LISTER LES UTILISATEUR===*/
 /*La fonction prend en paramètre la Connection à la base de donnée
