@@ -28,7 +28,7 @@ $varHTML .= "<div class='zoneMenu'>".PHP_EOL.
             "<h2>Menu</h2>".PHP_EOL.
             "<ul>".PHP_EOL.
             "<li><a href='./user.php'>Page d'Acceuil</a></li>".PHP_EOL.
-            "<li><a href=''>Changement de mot de passe</a></li>".PHP_EOL.
+            "<li><a href='./user.php?menu=chmdp'>Changement de mot de passe</a></li>".PHP_EOL.
             "<li><a href='./user.php?menu=contact_admin'>Contacter l'administrateur</a></li>".PHP_EOL.
             "<li><a href='./user.php?menu=quota_user'>Aperçu de votre quotas</a></li>".PHP_EOL.
             "<li><a href='./user.php?menu=clr_sess'>Fermer la session</a></li>".PHP_EOL.
@@ -60,9 +60,19 @@ switch ($_GET['menu']) {
     "<input type='submit' name ='ctrl_backMain' width='50px' value='Retour'</input>".PHP_EOL.
     "</form>".PHP_EOL;
     break;
-  /*default:
-    # code...
-    break;*/
+  case 'chmdp':
+    $varZoneContenue = "<h2>Changement de mot de passe<h2>" . PHP_EOL
+                       . "<form action=./user.php?menu=chmdp method='POST'>" . PHP_EOL.
+                       "<label for='old_pass'>Ancien mot de passe : </label>" . PHP_EOL.
+                       "<input type='password' name='old_pass' id='old_pass'></input>" . PHP_EOL.
+                       "<br/>" . PHP_EOL.
+                       "<br/>" . PHP_EOL.
+                       "<label for='new_pass'>Nouveau Password</label>" . PHP_EOL.
+                       "<input type='password' name='new_pass' id='new_pass'></input>" . PHP_EOL.
+                       "<br/>" . PHP_EOL.
+                       "<br/>" . PHP_EOL.
+                       "<label for='pass_confirm'>Confirmation Password</label>" . PHP_EOL.
+                       "<input type='password' name='pass_confirm' id='pass_confirm'></input>";
 }
 /*pour la fermeture de session*/
 if(isset($_POST['ctrl_backMain'])){

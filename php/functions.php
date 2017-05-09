@@ -551,4 +551,9 @@ function mailtoadmin($sujet, $message){
     echo "Message has been sent";
   }
 }
+
+/*fonction pour changer de mot de passe*/
+function changementmotdepasse(){
+
+}
  ?>
