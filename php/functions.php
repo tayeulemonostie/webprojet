@@ -16,6 +16,7 @@ session_start();
 
 require "class.phpmailer.php";
 require "class.smtp.php";
+require "DiskStatus.class.php";
 /*Déclaration de variable*/
 /* Base de données */
 define ("cst_JeuCaracBD"                  , "utf8");
@@ -557,11 +558,10 @@ function mailtoadmin($sujet, $message){
 
 /*fonction pour changer de mot de passe*/
 function changementmotdepasse($oldpass, $newpass, $confnewpass, $bd){
-
+//================== FAIRE LE LINUX CHANGEMENT DE MOT DE PASSE ==============
 /*update expiration passwoird aussi*/
   if($_SESSION['OldPassUser'] == $oldpass){
     if($newpass == $confnewpass){
-//
       $bd->query("UPDATE Comptes SET expiration_password=NOW() + INTERVAL 90 DAY, user_password=\"$newpass\" WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
       //request dans histopassword
       if($_SESSION['departement'] == 4){
@@ -579,6 +579,35 @@ function changementmotdepasse($oldpass, $newpass, $confnewpass, $bd){
       $result = "nooldpass";
       return $result;
   }
+}
 
+function hddusage(){
+  try {
+    $diskStatus = new DiskStatus('/');
+
+    $freeSpace = $diskStatus->freeSpace();
+    $totalSpace = $diskStatus->totalSpace();
+
+  } catch (Exception $e) {
+    echo $e->getMessage();
+  }
+  return "$freeSpace of $totalSpace";
+}
+
+function CPUusage(){
+  $result = exec('sudo uptime'); // uptime should give the CPU usage.
+  $result = explode(",", $result);
+  return $result[3];
+}
+
+function RAM(){
+    $free = shell_exec('free');
+  	$free = (string)trim($free);
+  	$free_arr = explode("\n", $free);
+  	$mem = explode(" ", $free_arr[1]);
+    $mem = preg_replace('/\s+/', ' ', $mem);
+  	$memory_usage = round($mem[12]/(1024*1024), 2) . " Go / " . round($mem[7]/(1024*1024), 2) . " Go";
+
+  	return $memory_usage;
 }
  ?>
