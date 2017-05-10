@@ -19,6 +19,18 @@ DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
 /*Démarage de session*/
 session_start();
 
+global $bd;
+
+/*Connection a la DB*/
+try {
+  $bd = new PDO('mysql:host=localhost;dbname=webprojet','root','root');
+  /*activer les exeptions en cas d'erreur */
+  $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+}
+catch(PDOExeption $e){
+  echo "Erreur de connection à la DB : " . $e->getMessage();
+}
+
 /*===== section link php ======*/
 require "functions.php";
 
@@ -62,7 +74,7 @@ switch ($_GET['menu']) {
     break;
   case 'chmdp':
     $varZoneContenue = "<h2>Changement de mot de passe<h2>" . PHP_EOL
-                       . "<form action=./user.php?menu=chmdp method='POST'>" . PHP_EOL.
+                       . "<form action='./user.php?menu=confchmdp' method='POST'>" . PHP_EOL.
                        "<label for='old_pass'>Ancien mot de passe : </label>" . PHP_EOL.
                        "<input type='password' name='old_pass' id='old_pass'></input>" . PHP_EOL.
                        "<br/>" . PHP_EOL.
@@ -72,7 +84,28 @@ switch ($_GET['menu']) {
                        "<br/>" . PHP_EOL.
                        "<br/>" . PHP_EOL.
                        "<label for='pass_confirm'>Confirmation Password</label>" . PHP_EOL.
-                       "<input type='password' name='pass_confirm' id='pass_confirm'></input>";
+                       "<input type='password' name='pass_confirm' id='pass_confirm'></input>" . PHP_EOL.
+                       "<br/>" . PHP_EOL.
+                       "<br/>" . PHP_EOL.
+                       "<input type='submit' value='Confirmer'></input>" .PHP_EOL.
+                       "</form>" . PHP_EOL;
+      break;
+ case 'confchmdp':
+    $varZoneContenue = "<h2>Confirmation changement de mot de passe</h2>". PHP_EOL.
+    "<form action='./user.php?menu=mdptodo' method='POST'>".PHP_EOL.
+    "<input type='submit' name ='ctrl_conf' width='50px' value='Confirmer'</input>".PHP_EOL.
+    "<input type='hidden' name='old_pass' value='".$_POST['old_pass']."''></input>" . PHP_EOL.
+    "<input type='hidden' name='new_pass' value='".$_POST['new_pass']."'></input>" . PHP_EOL.
+    "<input type='hidden' name='pass_confirm' value='".$_POST['pass_confirm']."'></input>" . PHP_EOL.
+    "</form>".PHP_EOL;
+    break;
+  case 'mdptodo':
+    changementmotdepasse($_POST['old_pass'], $_POST['new_pass'], $_POST['pass_confirm'], $bd);
+    $varZoneContenue = "<h2>Changement de mot de passe effectué</h2>" . PHP_EOL.
+                       "<form action='./user.php' method='POST'>".PHP_EOL.
+                       "<input type='submit' name ='ctrl_conf' width='50px' value='Confirmer'</input>".PHP_EOL.
+                       "</form>" . PHP_EOL;
+    break;
 }
 /*pour la fermeture de session*/
 if(isset($_POST['ctrl_backMain'])){

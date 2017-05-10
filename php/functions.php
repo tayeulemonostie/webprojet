@@ -53,7 +53,10 @@ function authentification ($login, $password, $bd){
     } else {
       /*tu tableau, je récupère l'id de l'usager*/
       $testing = $tabUser['usager_ID'];
-
+      /*besoin pour les request dans fonctoion modifiepassword*/
+      $_SESSION['ID_usager'] = $testing;
+      /*mettre le passwrod sans variable session pour fonction changerpassword*/
+      $_SESSION['OldPassUser'] = $tabUser['user_password'];
       /*request pour déterminer dans quel departmemnent lusager ce trouve*/
       $reqAdmin = $bd->query("SELECT departements_ID FROM Usagers_description WHERE usager_ID=$testing;");
       $tabUserDep = $reqAdmin->fetch(PDO::FETCH_ASSOC);
@@ -553,7 +556,29 @@ function mailtoadmin($sujet, $message){
 }
 
 /*fonction pour changer de mot de passe*/
-function changementmotdepasse(){
+function changementmotdepasse($oldpass, $newpass, $confnewpass, $bd){
+
+/*update expiration passwoird aussi*/
+  if($_SESSION['OldPassUser'] == $oldpass){
+    if($newpass == $confnewpass){
+//
+      $bd->query("UPDATE Comptes SET expiration_password=NOW() + INTERVAL 90 DAY, user_password=\"$newpass\" WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
+      //request dans histopassword
+      if($_SESSION['departement'] == 4){
+        //mettre 1 a modif_admin
+        $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '1', CURRENT_DATE(), '".$oldpass."');");
+      } else{
+        //request pour historique password
+        $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '0', CURRENT_DATE(), '".$oldpass."');");
+      }
+    } else{
+      $result = "passnotmatch";
+      return $result;
+    }
+  } else{
+      $result = "nooldpass";
+      return $result;
+  }
 
 }
  ?>
