@@ -148,8 +148,8 @@ function conf_create ($bd){
   $UserNumber = 0;
   $varDept = $_POST['dept'];
 
-  //$in90daysTMP = mktime(0, 0, 0, date("m")  , date("d")+90, date("Y"));
-  //$in90days = date("Y-m-d",$in90daysTMP);
+  $in90daysTMP = mktime(0, 0, 0, date("m")  , date("d")+90, date("Y"));
+  $in90days = date("Y-m-d",$in90daysTMP);
 
   /*request compte les user*/
   $req_1 = $bd->query("SELECT * FROM Usagers_description");
@@ -207,7 +207,7 @@ function conf_create ($bd){
         $_SESSION['compte_ID'] = $UserNumber;
         $_SESSION['nom_utilisateur'] = $_POST['newuser'];
         $_SESSION['user_password'] = $_POST['tamere'];
-        //$_SESSION['expiration_password'] = $in90days;
+        $_SESSION['expiration_password'] = $in90days;
 
         $_SESSION['ChangeData'] = True;
 
@@ -243,8 +243,17 @@ function add_user_Unix_DB ($bd){
               VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
                 '".$_SESSION['expiration_password']."')");
   /*section pour UNIX*/
-  exec("sudo useradd ".$_SESSION['nom_utilisateur']." -p ".$_SESSION['user_password']." -m");
-
+  $userCaliss = $_SESSION['nom_utilisateur'];
+  $passCaliss = $_SESSION['user_password'];
+  $crissDe = "sudo chpasswd <<< '".$userCaliss.":".$passCaliss."'";
+  exec("sudo useradd ".$_SESSION['nom_utilisateur']." -m");
+  shell_exec($crissDe);
+  //exec('sudo echo '".$_SESSION['user_password']."' | passwd --stdin ".$_SESSION['nom_utilisateur']);
+  exec("sudo mkdir /quota/".$_SESSION['nom_utilisateur']);
+  exec("sudo chown ".$_SESSION['nom_utilisateur']." /quota/".$_SESSION['nom_utilisateur']);
+  exec("sudo chmod 700 /quota/".$_SESSION['nom_utilisateur']);
+  /*entrée dans l'historique_password*/
+  $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['usager_ID']."', '1', CURRENT_DATE(), 'None');");
 }
 /*===FONCTION LISTER LES UTILISATEUR===*/
 /*La fonction prend en paramètre la Connection à la base de donnée
@@ -484,8 +493,8 @@ function mod_user ($bd){
 /*=================== FONCTION POUR LE USER ===================*/
 
 /*fonction quota*/
-function quotaUser (){
-  $varNomUser = $_SESSION['login'];
+function quotaUser ($user){
+  $varNomUser = $user;
   //commande Linux qui permet de voire les info de quota d'un utilisateur Particulié
   $varCommandeResult = exec("sudo quota $varNomUser");
   //Je reformate ce que la commande me sort pour seulement avoir UN espace en chaque donnés
@@ -494,22 +503,22 @@ function quotaUser (){
   $TabCommandeResultSplit = explode(" ", $varCommandeResult);
 
   //commande de Débug
-  //print_r($TabCommandeResultSplit);
+  print_r($TabCommandeResultSplit);
 
   //Je récupere seulement lespace total et utilisé de l'utilisateur
   $varUserEspaceTotal = $TabCommandeResultSplit[4];
-  $varUserEspaceUtil = $TabCommandeResultSplit[5];
+  $varUserEspaceUtil = $TabCommandeResultSplit[2];
 
   //Passage de Bytes en Mb pour la beauté de la chose
   $varUserEspaceUtil = (double)$varUserEspaceUtil / (1024*1024);
   $varUserEspaceTotal = (double)$varUserEspaceTotal / (1024*1024);
 
-  $varUserEspaceUtil = round($varUserEspaceUtil, 6);
+  $varUserEspaceUtil = round($varUserEspaceUtil, 4);
   //je véfifie si l'utilisateur à un quota
   if ($varUserEspaceTotal == 0){
     $varQuotaUser = "Vous n'avez pas de quota défini.";
   } else {
-    $varQuotaUser = $varUserEspaceUtil . " Mb/" . $varUserEspaceTotal . " Mb utilisés.";
+    $varQuotaUser = $varUserEspaceUtil . " Go/" . $varUserEspaceTotal . " Go utilisés.";
   }
   return $varQuotaUser;
 }

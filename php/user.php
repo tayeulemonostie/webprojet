@@ -56,7 +56,7 @@ if (!isset($_GET['menu'])){
 switch ($_GET['menu']) {
   case 'quota_user':
     $varZoneContenue = "<h2>Voici votre Quota disponible : </h2>" . PHP_EOL .
-                       "<p>" . quotaUser() . "</p>" . PHP_EOL;
+                       "<p>" . quotaUser($_SESSION['login']) . "</p>" . PHP_EOL;
     break;
   case 'contact_admin':
     $varZoneContenue = "<h2>Formulaire de contact de L'administrateur</h2>" . PHP_EOL .
