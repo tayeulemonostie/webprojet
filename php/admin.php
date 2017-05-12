@@ -107,7 +107,8 @@ if (isset($_SESSION['username']))
               "<h2>État du système</h2>".PHP_EOL.
               "<p>Trouver les Query nécessaires pour: Nom de la machine,
               Mémoire vive totale vs utilisée, Espace disque totale vs utilisé,
-              état du processeur,afficher</p>".PHP_EOL;
+              état du processeur,afficher</p>".PHP_EOL.
+              "<br/><br/>" . exec("hostname") . "<br/><br/>" . hddusage() . PHP_EOL . "<br/><br/><h3>CPU LOAD : " . CPUusage() . PHP_EOL . "<br/><br/><h3>RAM LOAD : " . RAM() . PHP_EOL;
               break;
       case 'quo_gest':
           $varHTML .=
