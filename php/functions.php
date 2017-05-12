@@ -129,7 +129,7 @@ function create_user ($bd){
           "</tr>".PHP_EOL.
           "<tr>".PHP_EOL.
             "<td align='right'>".PHP_EOL.
-            "<input type='reset' name='cancelForm' value='Annuler'></input></td>".PHP_EOL.
+            "<input type='Submit' name='ctrl_backMain' value='Annuler'></input></td>".PHP_EOL.
             "<td>".PHP_EOL.
             "<input type='Submit' name='submitCreate' value='Soumettre'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
@@ -137,6 +137,38 @@ function create_user ($bd){
       "</form>".PHP_EOL;
 
     return $contenuDiv;
+}
+/*===FONCTION FORMULAIRE CHANGEMENT DE MOT DE PASSE===*/
+/*La fonction prend en paramètre la page
+Elle retourne un formulaire POST  */
+function pwd_chngForm($page, $bd)
+{
+  $contenuDiv =
+  "<form action='./".$page.".php?menu=confchmdp' method='POST'>" . PHP_EOL;
+  if ($page == "admin")
+  {
+    $contenuDiv .=
+    Generate_User($bd);
+    $contenuDiv .=
+    "<br/>" . PHP_EOL.
+    "<br/>" . PHP_EOL;
+  }
+  $contenuDiv .=
+  "<label for='old_pass'>Ancien mot de passe : </label>" . PHP_EOL.
+  "<input type='password' name='old_pass' id='old_pass'></input>" . PHP_EOL.
+  "<br/>" . PHP_EOL.
+  "<br/>" . PHP_EOL.
+  "<label for='new_pass'>Nouveau Password</label>" . PHP_EOL.
+  "<input type='password' name='new_pass' id='new_pass'></input>" . PHP_EOL.
+  "<br/>" . PHP_EOL.
+  "<br/>" . PHP_EOL.
+  "<label for='pass_confirm'>Confirmation Password</label>" . PHP_EOL.
+  "<input type='password' name='pass_confirm' id='pass_confirm'></input>" . PHP_EOL.
+  "<br/>" . PHP_EOL.
+  "<br/>" . PHP_EOL.
+  "<input type='submit' value='Confirmer'></input>" .PHP_EOL.
+  "</form>" . PHP_EOL;
+  return $contenuDiv;
 }
 /*===FONCTION CONFIRME LE NOUVEL UTILISATEUR===*/
 
@@ -243,12 +275,15 @@ function add_user_Unix_DB ($bd){
               VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
                 '".$_SESSION['expiration_password']."')");
   /*section pour UNIX*/
-  $userCaliss = $_SESSION['nom_utilisateur'];
-  $passCaliss = $_SESSION['user_password'];
-  $crissDe = "sudo chpasswd <<< '".$userCaliss.":".$passCaliss."'";
+  //$userCaliss = $_SESSION['nom_utilisateur'];
+  //$passCaliss = $_SESSION['user_password'];
+  //$crissDe = "sudo chpasswd <<< '".$userCaliss.":".$passCaliss."'";
   exec("sudo useradd ".$_SESSION['nom_utilisateur']." -m");
-  shell_exec($crissDe);
+  //shell_exec($crissDe);
   //exec('sudo echo '".$_SESSION['user_password']."' | passwd --stdin ".$_SESSION['nom_utilisateur']);
+
+  //trouver un script qui va modifier le user_password dans Linux
+
   exec("sudo mkdir /quota/".$_SESSION['nom_utilisateur']);
   exec("sudo chown ".$_SESSION['nom_utilisateur']." /quota/".$_SESSION['nom_utilisateur']);
   exec("sudo chmod 700 /quota/".$_SESSION['nom_utilisateur']);
@@ -291,7 +326,8 @@ function list_user ($bd){
         "<div><li><a href='./admin.php?menu=mod_user&user=".($var_IndiceChamp+$var_i).
         "'>".$var_ValChamp."</a></li></div>".PHP_EOL;
         $contenuDiv .= "<div>".PHP_EOL;
-        $contenuDiv .= Generate_User($var_IndiceChamp+$var_i);
+        $contenuDiv .= Generate_UserDetails($var_IndiceChamp+$var_i);
+        $contenuDiv .= "</div>".PHP_EOL;
         $var_i++;
       }
     }
@@ -305,7 +341,7 @@ function list_user ($bd){
 /*La fonction prend en paramètre le usager_ID
 Elle retourne un tableau avec les détails de l'utilisateur */
 
-function Generate_User($usager_ID)
+function Generate_UserDetails($usager_ID)
 {
 /*Variable générale*/
 $contenu = "";
@@ -399,32 +435,23 @@ $contenuDiv .=
   "</select>".PHP_EOL;
 return $contenuDiv;
 }
-/*===FONCTION FORMULAIRE MODIFIER UTILISATEUR===*/
+/*===FONCTION GÉNÉRER LA LISTE DES UTILISATEURS===*/
 
-/*La fonction prend en paramètre la Connection à la base de donnée
-Elle retourne un formulaire POST en contenu DIV */
+/*Elle retourne une liste à option  */
 
-function mod_user ($bd){
-  $contenuDiv = "";
-  $UserNumber = 0;
-  $UserCount = 0;
-  $var_vect_User  = [];
-  $var_IndiceChamp = 0;
-  $var_i = 1;
-  $var_ValChamp    = "";
-  $tempo = 0;
-
-  /*request 1. sort les utilisateurs */
-  $req_1 = $bd->query("SELECT CONCAT(prenom,' ',nom) FROM Usagers_description");
-  /*compte les user + 1 pour donner le user_ID*/
-  $UserCount = ($req_1->rowCount())+1;
-
-    $contenuDiv =
-    "<form method='POST' ACTION='./admin.php?menu=confUserMod_page'>".PHP_EOL.
-      "<table cellpadding='10px'>".PHP_EOL.
-          "<tr class='ModifyTop'>".PHP_EOL.
-            "<td><label for='dept' class='ModifyTop'>Utilisateur à modifier: </label>".PHP_EOL;
-            //Construction dynamique de la liste des utilisateurs
+function Generate_User($bd)
+{
+/*Variable générale*/
+$contenuDiv = "";
+$UserCount = 0;
+$var_vect_User  = [];
+$var_IndiceChamp = 0;
+$var_i = 1;
+$var_ValChamp    = "";
+/*request 1. sort les utilisateurs */
+$req_1 = $bd->query("SELECT CONCAT(prenom,' ',nom) FROM Usagers_description");
+/*compte les user + 1 pour donner le user_ID*/
+$UserCount = ($req_1->rowCount())+1;
       $contenuDiv .=
               "<select name='user' id='user' size=".$UserCount."'>".PHP_EOL;
             //Tant que tu as des utilisateurs, créer une option
@@ -446,25 +473,42 @@ function mod_user ($bd){
           $var_i++;
         }
       }
-          //fermeture du select et on termine le formulaire
+      //fermeture
       $contenuDiv .=
-              "</select>".PHP_EOL.
+      "</select>".PHP_EOL;
+      return $contenuDiv;
+}
+/*===FONCTION FORMULAIRE MODIFIER UTILISATEUR===*/
+
+/*La fonction prend en paramètre la Connection à la base de donnée
+Elle retourne un formulaire POST en contenu DIV */
+
+function mod_user ($bd){
+  $contenuDiv = "";
+  $contenuDiv =
+    "<form method='POST' ACTION='./admin.php?menu=confUserMod_page'>".PHP_EOL.
+      "<table cellpadding='10px'>".PHP_EOL.
+          "<tr class='ModifyTop'>".PHP_EOL.
+            "<td><label for='dept' class='ModifyTop'>Utilisateur à modifier: </label>".PHP_EOL;
+            //Construction dynamique de la liste des utilisateurs
+      $contenuDiv .= Generate_User($bd);
+            //fermeture
+      $contenuDiv .=
             "</td>".PHP_EOL.
             "<td><label for='dept' class='ModifyTop'>Info à modifier: </label>".PHP_EOL.
-            "<select name='infoTag' id='infoTag' onclick='tayeule()' size='7'>".PHP_EOL.
+            "<select name='infoTag' id='infoTag' onclick='FlagDept()' size='7'>".PHP_EOL.
             "<option value='1'>Nom de famille</option>".PHP_EOL.
             "<option value='2'>Prénom</option>".PHP_EOL.
             "<option value='3'># de tél.(domicile)</option>".PHP_EOL.
             "<option value='4'># de poste téléphonique</option>".PHP_EOL.
-            "<option value='5'># de machine</option>".PHP_EOL.
-            "<option value='6'>Nom d'utilisateur</option>".PHP_EOL;
+            "<option value='5'># de machine</option>".PHP_EOL;
             if (isset($_GET['deptFlag']))
             {
-              $contenuDiv .= "<option value='7' selected='selected'>";
+              $contenuDiv .= "<option value='6' selected='selected'>";
             }
             else
             {
-              $contenuDiv .= "<option value='7'>";
+              $contenuDiv .= "<option value='6'>";
             }
             $contenuDiv .=
             "Nom du département</option>".PHP_EOL.
@@ -489,6 +533,69 @@ function mod_user ($bd){
       "</form>".PHP_EOL;
 
     return $contenuDiv;
+}
+/*===FONCTION GÉNÉRER L'HISTORIQUE DES CHANGEMENTS MOT DE DE PASSE===*/
+
+//Elle retourne une table personnalisée par la requête SQL*/
+
+function Generate_PwHistory()
+{
+/*Variable générale*/
+$contenu = "";
+/*Variables de manipulations bd*/
+$var_Requete = "  SELECT nom_utilisateur AS Utilisateur, REPLACE(REPLACE(modif_admin,0,'Utilisateur'),1,'Administrateur') AS 'Modifié par',
+                         date_modif AS 'En date du', ancien_password AS 'Ancien mot de passe'
+                         FROM Historique_password
+                         JOIN webprojet.Comptes ON Comptes.usager_ID=Historique_password.usager_ID";
+$obj_ResutatReq  = NULL;
+$obj_InfoChamp   = NULL;
+$var_vect_UnEnr  = [];  // Vecteur représentant la req. principale
+$var_IndiceChamp = 0; // sert dans le for each ligne de la req. principale
+$var_ValChamp    = "";
+$varStep = 0; // ce qui va servir à compter quand changer de ligne
+/* CONNEXION À LA BASE DE DONNÉES*/
+/* Création d'un pointeur sur la BD */
+$bd = new mysqli( cst_MySQLServeur, cst_MySQLCompte, cst_MySQLMotPasse, cst_MySQLBD );
+/* Gestion des erreurs de connexion */
+if ($bd->connect_errno)
+{
+   echo "Echec de connexion à la BD ". cst_MySQLBD . " , Err: " . $obj_BD->connect_error;
+   exit;
+}
+/* Ajustement du format des transactions par défaut entre le client et la BD */
+$bd->query ("SET NAMES         '".cst_JeuCaracBD."' COLLATE '".cst_JeuCaracBD_ReglesComparaison."'");
+$bd->query ("SET CHARACTER_SET '".cst_JeuCaracBD."'");
+// Exécution de la requête
+$obj_ResutatReq = $bd->query($var_Requete);
+//Créer l'entête du tableau
+$contenu .= "<table>" . PHP_EOL . "<tr>" . PHP_EOL;
+
+  while($obj_InfoChamp = $obj_ResutatReq->fetch_field())
+  {
+  // Info d'entête.
+  $contenu .= "<th>".$obj_InfoChamp->name ."</th>" . PHP_EOL;
+  }
+  $contenu .= "</tr>". PHP_EOL;
+  //Ajouter les informations dans une rangée
+  $contenu .= "<tr>" . PHP_EOL;
+
+  while($var_vect_UnEnr = $obj_ResutatReq->fetch_array(MYSQLI_NUM))
+    {
+      // Récupération des informations de chaque champ dans une cellule
+      foreach($var_vect_UnEnr as $var_IndiceChamp => $var_ValChamp)
+		    {
+		        $contenu .= "<td>".$var_ValChamp."</td>". PHP_EOL;
+            $varStep++;
+            //à chaque 4 valeurs créer une nouvelle rangée
+            if ($varStep % 4 == 0)
+            {
+              $contenu .= "</tr>". PHP_EOL . "<tr>";
+            }
+		    }
+    }
+    // Fermeture de la rangée et de la table
+    $contenu .= "</tr>".PHP_EOL."</table>";
+return $contenu;
 }
 /*=================== FONCTION POUR LE USER ===================*/
 

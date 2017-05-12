@@ -94,12 +94,13 @@ if (isset($_SESSION['username']))
       case 'pwd_chng':
           $varHTML .=
               "<h2>Modifier un mot de passe</h2>".PHP_EOL.
-              "<p>Formulaire avec submit,Processus de validation,DB entry</p>".PHP_EOL;
+              pwd_chngForm("admin", $bd);
               break;
       case 'pwd_hist':
           $varHTML .=
-              "<h2>Historique des changements de mot de passe</h2>".PHP_EOL.
-              "<p>Query à la DB,afficher dans un tableau</p>".PHP_EOL;
+              "<h2>Historique des changements de mot de passe</h2>".PHP_EOL;
+          $varHTML .=
+              Generate_PwHistory();
               break;
       case 'chk_syst':
           $varHTML .=
@@ -130,8 +131,7 @@ if (isset($_SESSION['username']))
           $varHTML .=
              "<form action='./admin.php?menu=user_todo' method='POST'>".PHP_EOL.
              "<input type='submit' name ='ctrl_AddUser' width='50px' value='Ajouter'</input>".PHP_EOL.
-             /*"<input type='submit' name ='ctrl_backMain' width='50px' value='Annuler'</input>".PHP_EOL.*/
-             print_r($_SESSION);
+             "<input type='submit' name ='ctrl_backMain' width='50px' value='Annuler'</input>".PHP_EOL.
              "</form>".PHP_EOL;
               break;
       case 'confUserMod_page':
@@ -141,9 +141,10 @@ if (isset($_SESSION['username']))
               $varHTML .=
               "<form action='./admin.php?menu=mod_todo' method='POST'>".PHP_EOL.
               "<input type='submit' name ='ctrl_modUser' width='50px' value='Ajouter'</input>".PHP_EOL.
-              /*"<input type='submit' name ='ctrl_backMain' width='50px' value='Annuler'</input>".PHP_EOL.*/
+              "<input type='submit' name ='ctrl_backMain' width='50px' value='Annuler'</input>".PHP_EOL.
               "</form>".PHP_EOL;
               break;
+      //Lorsque l'admin confirme l'ajout d'un utilisateur
       case 'user_todo':
           if ($_SESSION['ChangeData'] == True)
           {
@@ -159,8 +160,25 @@ if (isset($_SESSION['username']))
             header('Location: ./admin.php?menu=add_user');
           }
           break;
+      //Lorsque l'admin confirme la modification à l'utilisateur
+      case 'mod_todo':
+          if ($_SESSION['ChangeData'] == True)
+          {
+            // FAIRE UNE FONCTION QUI VA MANIPULER LES 3 VALEURS POST RECUE
+            // (USAGER_ID, LE CHAMP À MODIFIER, LA VALEUR ENTRÉE (FAIRE UN SWITCH SELON LA VALEUR RECUE))
+            $varHTML .=
+            "<h2>Utilisateur modifié!</h2>".PHP_EOL;
+            "<form action='./admin.php' method='POST'>".PHP_EOL.
+            "<input type='submit' name ='ctrl_backMain' width='50px' value='Retour à l'acceuil'</input>".PHP_EOL.
+            "</form>".PHP_EOL;
+          }
+          else
+          {
+            header('Location: ./admin.php?menu=mod_user');
+          }
+          break;
       default:
-              break;
+          break;
      }
      $varHTML .=
      "</div>".PHP_EOL;

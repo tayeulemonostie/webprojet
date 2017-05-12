@@ -1,34 +1,17 @@
-function tamere()
+// Fonction qui va permettre de rentrer une valeur Get pour appeler la liste des département
+
+function FlagDept()
 {
   var e = document.getElementById("infoTag");
   var strUser = e.options[e.selectedIndex].value;
   var td = document.getElementById("infoTagTD");
-
-  if (strUser == 7)
-  {
-
-    td.innerHTML =
-    "<label for='infoMod'>DÉPARTEMENT</label><input type='text' id='infoMod' name='infoMod'></input>";
-
-  }
-  else
-  {
-    td.innerHTML =
-    "<label for='infoMod'>Modifié pour: </label><input type='text' id='infoMod' name='infoMod'></input>";
-  }
-  return strUser;
-}
-function tayeule()
-{
-  var e = document.getElementById("infoTag");
-  var strUser = e.options[e.selectedIndex].value;
-  var td = document.getElementById("infoTagTD");
-
-  if (strUser == 7)
+  //si l'administrateur clique sur le choix pour modifier le département
+  if (strUser == 6)
   {
 
     window.location.href = 'http://localhost/webprojet/webprojet/php/admin.php?menu=mod_user&deptFlag=True';
   }
+  // Sinon il remet le input standard
   else
   {
     td.innerHTML =

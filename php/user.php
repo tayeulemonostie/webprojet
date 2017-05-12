@@ -73,23 +73,9 @@ switch ($_GET['menu']) {
     "</form>".PHP_EOL;
     break;
   case 'chmdp':
-    $varZoneContenue = "<h2>Changement de mot de passe<h2>" . PHP_EOL
-                       . "<form action='./user.php?menu=confchmdp' method='POST'>" . PHP_EOL.
-                       "<label for='old_pass'>Ancien mot de passe : </label>" . PHP_EOL.
-                       "<input type='password' name='old_pass' id='old_pass'></input>" . PHP_EOL.
-                       "<br/>" . PHP_EOL.
-                       "<br/>" . PHP_EOL.
-                       "<label for='new_pass'>Nouveau Password</label>" . PHP_EOL.
-                       "<input type='password' name='new_pass' id='new_pass'></input>" . PHP_EOL.
-                       "<br/>" . PHP_EOL.
-                       "<br/>" . PHP_EOL.
-                       "<label for='pass_confirm'>Confirmation Password</label>" . PHP_EOL.
-                       "<input type='password' name='pass_confirm' id='pass_confirm'></input>" . PHP_EOL.
-                       "<br/>" . PHP_EOL.
-                       "<br/>" . PHP_EOL.
-                       "<input type='submit' value='Confirmer'></input>" .PHP_EOL.
-                       "</form>" . PHP_EOL;
-      break;
+    $varZoneContenue = "<h2>Changement de mot de passe<h2>" . PHP_EOL;
+    $varZoneContenue .= pwd_chngForm ("user", $bd);
+    break;
  case 'confchmdp':
     $varZoneContenue = "<h2>Confirmation changement de mot de passe</h2>". PHP_EOL.
     "<form action='./user.php?menu=mdptodo' method='POST'>".PHP_EOL.
