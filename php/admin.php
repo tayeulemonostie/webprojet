@@ -105,10 +105,27 @@ if (isset($_SESSION['username']))
       case 'chk_syst':
           $varHTML .=
               "<h2>État du système</h2>".PHP_EOL.
-              "<p>Trouver les Query nécessaires pour: Nom de la machine,
-              Mémoire vive totale vs utilisée, Espace disque totale vs utilisé,
-              état du processeur,afficher</p>".PHP_EOL.
-              "<br/><br/>" . exec("hostname") . "<br/><br/>" . hddusage() . PHP_EOL . "<br/><br/><h3>CPU LOAD : " . CPUusage() . PHP_EOL . "<br/><br/><h3>RAM LOAD : " . RAM() . PHP_EOL;
+              "<table id='tablesysetat' align='center'>" . PHP_EOL.
+              "<tr>
+                <td class='etatsys'>Nom de la machine:</td>
+                <td class='etatsys'>".exec("hostname") . "</td>
+              </tr>". PHP_EOL.
+              "<tr>
+                <td class='etatsys'>Utilisation du CPU : </td>
+                <td class='etatsys'>". CPUusage() ."</td>
+              </tr>". PHP_EOL.
+              "<tr>
+                <td class='etatsys'>Utilisation de la RAM : </td>
+                <td class='etatsys'>". RAM() ."</td>
+              </tr>". PHP_EOL.
+              "<tr>
+                <td class='etatsys'>Espace libre du disque OS : </td>
+                <td class='etatsys'>".hddusage("/")."</td>
+              </tr>". PHP_EOL.
+              "<tr>
+                <td class='etatsys'>Espace libre du disque Quota : </td>
+                <td class='etatsys'>".hddusage("/quota")."</td>
+              </tr>". PHP_EOL;
               break;
       case 'quo_gest':
           $varHTML .=

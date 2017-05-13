@@ -697,9 +697,11 @@ function changementmotdepasse($oldpass, $newpass, $confnewpass, $bd){
   }
 }
 
-function hddusage(){
+
+//============ function pous létat du system================
+function hddusage($path){
   try {
-    $diskStatus = new DiskStatus('/');
+    $diskStatus = new DiskStatus($path);
 
     $freeSpace = $diskStatus->freeSpace();
     $totalSpace = $diskStatus->totalSpace();
@@ -707,13 +709,13 @@ function hddusage(){
   } catch (Exception $e) {
     echo $e->getMessage();
   }
-  return "$freeSpace of $totalSpace";
+  return "$freeSpace de $totalSpace utilisés";
 }
 
 function CPUusage(){
-  $result = exec('sudo uptime'); // uptime should give the CPU usage.
-  $result = explode(",", $result);
-  return $result[3];
+  //donne le l'utilisation du CPU en 1min
+  $load = sys_getloadavg();
+	return $load[0];
 }
 
 function RAM(){

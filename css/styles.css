@@ -65,3 +65,13 @@ h1 {
 .ModifyTop {
   vertical-align: top;
 }
+
+/*pour letat du system*/
+#tablesysetat {
+  border: 1px solid black;
+}
+
+.etatsys {
+  border: 1px solid black;
+  font-size: 35px;
+}
