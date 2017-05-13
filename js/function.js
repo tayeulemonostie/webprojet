@@ -19,3 +19,13 @@ function FlagDept()
   }
   return strUser;
 }
+// Fonctions qui s'occupe de ramener à la page d'acceuil lorsqu'on annule
+
+function FlagMain()
+{
+      window.location.href = 'http://localhost/webprojet/webprojet/php/admin.php';
+}
+function FlagMainU()
+{
+      window.location.href = 'http://localhost/webprojet/webprojet/php/user.php';
+}

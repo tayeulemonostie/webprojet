@@ -78,7 +78,7 @@ if (isset($_SESSION['username']))
           $varHTML .=
               "<h2>Liste des utilisateurs</h2>".PHP_EOL;
           $varHTML .=
-              list_user($bd);
+              list_user($bd,0);
               break;
       case 'add_user':
           $varHTML .=
@@ -130,56 +130,80 @@ if (isset($_SESSION['username']))
       case 'quo_gest':
           $varHTML .=
               "<h2>Gestion des quotas</h2>".PHP_EOL.
-              "<p>Faire un premier formulaire avec 2 choix: 1. Voir les quotas
-              -->>Query DB et Unix,afficher 2. Modifier le quota -->> Formulaire avec
-              submit,Processus de validation,DB entry Unix entry</p>".PHP_EOL;
+              "<form action='./admin.php?menu=viewQuota' method='POST'>".PHP_EOL.
+              "<input type='submit' name ='viewQuota' width='50px' value='Voir les quotas'</input>".PHP_EOL."</form>".PHP_EOL.
+              "<form action='./admin.php?menu=editQuota' method='POST'>".PHP_EOL.
+              "<input type='submit' name ='editQuota' width='50px' value='Modifier les quotas'</input>".PHP_EOL."</form>".PHP_EOL;
+              break;
+      case 'viewQuota':
+          $varHTML .=
+              "<h2>Liste des quotas</h2>".PHP_EOL.
+              list_user($bd,1);
+              break;
+      case 'editQuota':
+          $varHTML .=
+              "<h2>Modifier le quota</h2>".PHP_EOL;
               break;
       case 'clr_sess':
           $varHTML .=
              "<h2>Confirmation la fermeture de session</h2>".PHP_EOL.
              "<form action='./admin.php?menu=clr_sess' method='POST'>".PHP_EOL.
     			   "<input type='submit' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input>".PHP_EOL.
-             "<input type='submit' name ='ctrl_backMain' width='50px' value='Retour'</input>".PHP_EOL.
+             "<input type='button' onclick='FlagMain('admin')' value='Retour'></input>".PHP_EOL.
     			   "</form>".PHP_EOL;
               break;
       case 'conf_page':
+      print_r($_POST);
           $varHTML .=
-             "<h2>Confirmation des changements à la base de donnée</h2>".PHP_EOL;
-          $varHTML .= conf_create($bd);
-          $varHTML .=
+             "<h2>Confirmation de l'ajout à la base de donnée</h2>".PHP_EOL.
+             //c'est à l'intérieur de cette fonction que les variables session pour les requêtes sont crées
+             conf_create($bd).
              "<form action='./admin.php?menu=user_todo' method='POST'>".PHP_EOL.
              "<input type='submit' name ='ctrl_AddUser' width='50px' value='Ajouter'</input>".PHP_EOL.
-             "<input type='submit' name ='ctrl_backMain' width='50px' value='Annuler'</input>".PHP_EOL.
+             "<input type='button' onclick='FlagMain('admin')' value='Annuler'></input>".PHP_EOL.
              "</form>".PHP_EOL;
               break;
       case 'confUserMod_page':
+        print_r($_POST);
           $varHTML .=
-            "<h2>Confirmation des changements à la base de donnée</h2>".PHP_EOL;
-              $varHTML .= conf_modify();
-              $varHTML .=
+            "<h2>Confirmation de la modification à la base de donnée</h2>".PHP_EOL.
+            //c'est à l'intérieur de cette fonction que les variables session pour les requêtes sont créés
+              conf_modify($bd).
               "<form action='./admin.php?menu=mod_todo' method='POST'>".PHP_EOL.
-              "<input type='submit' name ='ctrl_modUser' width='50px' value='Ajouter'</input>".PHP_EOL.
-              "<input type='submit' name ='ctrl_backMain' width='50px' value='Annuler'</input>".PHP_EOL.
+              "<input type='submit' name ='ctrl_modUser' width='50px' value='Modifier'</input>".PHP_EOL.
+              "<input type='button' onclick='FlagMain('admin')' value='Annuler'></input>".PHP_EOL.
               "</form>".PHP_EOL;
               break;
-      //Lorsque l'admin confirme l'ajout d'un utilisateur
+      //Lorsque l'admin confirme l'ajout d'un utilisateur (L'exécution en background)
       case 'user_todo':
+          if ($_POST['ctrl_AddUser'] == "Ajouter")
+          {
+            $_SESSION['ChangeData'] == True;
+          }
+          else
+          {
+            header('Location: ./admin.php?menu=add_user');
+          }
           if ($_SESSION['ChangeData'] == True)
           {
             add_user_Unix_DB($bd);
             $varHTML .=
             "<h2>Utilisateur ajouté!</h2>".PHP_EOL;
             "<form action='./admin.php' method='POST'>".PHP_EOL.
-            "<input type='submit' name ='ctrl_backMain' width='50px' value='Retour à l'acceuil'</input>".PHP_EOL.
+            "<input type='button' onclick='FlagMain('admin')' value='Retour'></input>".PHP_EOL.
             "</form>".PHP_EOL;
-          }
-          else
-          {
-            header('Location: ./admin.php?menu=add_user');
           }
           break;
       //Lorsque l'admin confirme la modification à l'utilisateur
       case 'mod_todo':
+          if ($_POST['ctrl_modUser'] == "Modifier")
+          {
+            $_SESSION['ChangeData'] == True;
+          }
+          else
+          {
+            header('Location: ./admin.php?menu=mod_user');
+          }
           if ($_SESSION['ChangeData'] == True)
           {
             // FAIRE UNE FONCTION QUI VA MANIPULER LES 3 VALEURS POST RECUE
@@ -187,7 +211,7 @@ if (isset($_SESSION['username']))
             $varHTML .=
             "<h2>Utilisateur modifié!</h2>".PHP_EOL;
             "<form action='./admin.php' method='POST'>".PHP_EOL.
-            "<input type='submit' name ='ctrl_backMain' width='50px' value='Retour à l'acceuil'</input>".PHP_EOL.
+            "<input type='button' onclick='FlagMain('admin')' value='Retour'></input>".PHP_EOL.
             "</form>".PHP_EOL;
           }
           else
@@ -201,13 +225,6 @@ if (isset($_SESSION['username']))
      $varHTML .=
      "</div>".PHP_EOL;
     }
-
-    if(isset($_POST['ctrl_backMain']))
-    {
-      $_SESSION['ChangeData'] = False;
-      header('Location: ./admin.php');
-    }
-
     if(isset($_POST['ctrl_nouvSess']))
     {
       session_destroy();
@@ -223,8 +240,6 @@ else
 {
   header('Location: ./index.php');
 }
-
-
  ?>
 
  <!DOCTYPE html>

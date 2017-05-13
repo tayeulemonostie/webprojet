@@ -75,3 +75,21 @@ h1 {
   border: 1px solid black;
   font-size: 35px;
 }
+
+/*pour le formulaire créé un user*/
+.formCreate {
+  width:225px;
+  display:block;
+  font: 15px arial, sans-serif;
+}
+/*pour la liste des département*/
+.formDept {
+  width:245px;
+  font: 15px arial, sans-serif;
+}
+/*pour la liste des département*/
+.rowMiddle {
+  display:inline;
+  align:center;
+  padding-left:120px;
+}

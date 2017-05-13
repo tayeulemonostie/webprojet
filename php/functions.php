@@ -54,10 +54,16 @@ function authentification ($login, $password, $bd){
     } else {
       /*tu tableau, je récupère l'id de l'usager*/
       $testing = $tabUser['usager_ID'];
+
+      //Ces 2 variables je ne peux pas m'en servir dans la fonction générale
+      //L'admin doit faire une requête pour écraser le 'OldPassUser' et 'ID_Usager'
+      //Une autre fonction sera exécutée pour l'administrateur, avec moins de paramètres et variables session
+
       /*besoin pour les request dans fonctoion modifiepassword*/
       $_SESSION['ID_usager'] = $testing;
       /*mettre le passwrod sans variable session pour fonction changerpassword*/
       $_SESSION['OldPassUser'] = $tabUser['user_password'];
+
       /*request pour déterminer dans quel departmemnent lusager ce trouve*/
       $reqAdmin = $bd->query("SELECT departements_ID FROM Usagers_description WHERE usager_ID=$testing;");
       $tabUserDep = $reqAdmin->fetch(PDO::FETCH_ASSOC);
@@ -94,45 +100,45 @@ function create_user ($bd){
   $contenuDiv =
     "<form method='POST' ACTION='./admin.php?menu=conf_page'>".PHP_EOL.
       "<table cellpadding='10px'>".PHP_EOL.
-          "<tr>".PHP_EOL.
+          "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='fname'>Nom de famille</label>".PHP_EOL.
             "<input type='text' id='fname' name='fname' maxlength='25'></input></td>".PHP_EOL.
             "<td><label for='name'>Prénom</label>".PHP_EOL.
             "<input type='text' id='name' name='name' maxlength='25'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
-          "<tr>".PHP_EOL.
+          "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='notel'># d'utilisateur</label>".PHP_EOL.
             "<input type='text' id='notel' name='notel' maxlength='2' disabled='disabled' placeholder='".$UserNumber."'></input></td>".PHP_EOL.
             "<td><label for='notel'># de tél.(domicile)</label>".PHP_EOL.
             "<input type='text' id='notel' name='notel' maxlength='12' placeholder='999-999-9999'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
-          "<tr>".PHP_EOL.
+          "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='poste'># de poste téléphonique</label>".PHP_EOL.
             "<input type='text' id='poste' name='poste' maxlength='4'></input></td>".PHP_EOL.
             "<td><label for='machine'># de machine</label>".PHP_EOL.
             "<input type='text' id='machine' name='machine' maxlength='4'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
-          "<tr>".PHP_EOL.
+          "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='newuser'>Nom d'utilisateur</label>".PHP_EOL.
             "<input type='text' id='newuser' name='newuser' maxlength='12'></input></td>".PHP_EOL.
             "<td><label for='tamere'>Mot de passe</label>".PHP_EOL.
             "<input type='text' id='tamere' name='tamere' maxlength='12'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
-          "<tr>".PHP_EOL.
-            "<td><label for='dept'>Nom du département</label>".PHP_EOL;
+          "<tr class='formCreate'>".PHP_EOL.
+            "<td><label for='dept'>Choisir le département</label>".PHP_EOL;
             //Construction dynamique de la liste des départements
       $contenuDiv .= Generate_Dept($bd);
             //Retour à la création du formulaire
       $contenuDiv .=
             "</td>".PHP_EOL.
-            "<td><label for='quot'>Taille du quota (Go)</label>".PHP_EOL.
+            "<td valign='top'><label for='quot'>Taille du quota (Go)</label>".PHP_EOL.
             "<input type='text' id='quot' name='quot' maxlength='2'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr>".PHP_EOL.
-            "<td align='right'>".PHP_EOL.
-            "<input type='Submit' name='ctrl_backMain' value='Annuler'></input></td>".PHP_EOL.
-            "<td>".PHP_EOL.
-            "<input type='Submit' name='submitCreate' value='Soumettre'></input></td>".PHP_EOL.
+            "<td colspan='2'>".PHP_EOL."<div class='rowMiddle'>".
+            "<input type='submit' name='submitCreate' value='Soumettre'></input>".PHP_EOL.
+            "<input type='reset' value='Effacer'></input>".PHP_EOL.
+            "<input type='button' onclick='FlagMain()' value='Annuler'></input></div></td>".PHP_EOL.
           "</tr>".PHP_EOL.
         "</table>".PHP_EOL.
       "</form>".PHP_EOL;
@@ -150,24 +156,37 @@ function pwd_chngForm($page, $bd)
   {
     $contenuDiv .=
     Generate_User($bd);
+  }
+  else
+  {
+    $contenuDiv .=
+    "<label for='old_pass'>Ancien mot de passe : </label>" . PHP_EOL.
+    "<input type='password' name='old_pass' id='old_pass'></input>" . PHP_EOL;
+  }
     $contenuDiv .=
     "<br/>" . PHP_EOL.
+    "<br/>" . PHP_EOL.
+    "<label for='new_pass'>Nouveau Password</label>" . PHP_EOL.
+    "<input type='password' name='new_pass' id='new_pass'></input>" . PHP_EOL.
+    "<br/>" . PHP_EOL.
     "<br/>" . PHP_EOL;
+  if ($page == "user")
+  {
+    $contenuDiv .=
+    "<label for='pass_confirm'>Confirmation Password</label>" . PHP_EOL.
+    "<input type='password' name='pass_confirm' id='pass_confirm'></input>" . PHP_EOL.
+    "<br/>" . PHP_EOL.
+    "<br/>" . PHP_EOL.
+    "<input type='submit' value='Soumettre'></input>" .PHP_EOL.
+    "<input type='button' onclick='FlagMainU()' value='Annuler'></input>".PHP_EOL;
+  }
+  else
+  {
+    $contenuDiv .=
+    "<input type='submit' name='ctrl_PWChange' value='Soumettre'></input>" .PHP_EOL.
+    "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL;
   }
   $contenuDiv .=
-  "<label for='old_pass'>Ancien mot de passe : </label>" . PHP_EOL.
-  "<input type='password' name='old_pass' id='old_pass'></input>" . PHP_EOL.
-  "<br/>" . PHP_EOL.
-  "<br/>" . PHP_EOL.
-  "<label for='new_pass'>Nouveau Password</label>" . PHP_EOL.
-  "<input type='password' name='new_pass' id='new_pass'></input>" . PHP_EOL.
-  "<br/>" . PHP_EOL.
-  "<br/>" . PHP_EOL.
-  "<label for='pass_confirm'>Confirmation Password</label>" . PHP_EOL.
-  "<input type='password' name='pass_confirm' id='pass_confirm'></input>" . PHP_EOL.
-  "<br/>" . PHP_EOL.
-  "<br/>" . PHP_EOL.
-  "<input type='submit' value='Confirmer'></input>" .PHP_EOL.
   "</form>" . PHP_EOL;
   return $contenuDiv;
 }
@@ -242,23 +261,28 @@ function conf_create ($bd){
         $_SESSION['user_password'] = $_POST['tamere'];
         $_SESSION['expiration_password'] = $in90days;
 
-        $_SESSION['ChangeData'] = True;
-
-
-/*=========SECTION POUR CRÉE LE USER SUR LINUX========*/
-
-    return $contenuDiv;
+        return $contenuDiv;
 }
-/*===FONCTION CONFIRME LE NOUVEL UTILISATEUR===*/
+/*===FONCTION CONFIRME LES VALEURS DE MODIFICATIONS RECUES===*/
 
 /*La fonction prend en paramètre la Connection à la base de donnée
 Elle recoit les valeur POST les stock puis affiche en contenu DIV */
 
 function conf_modify ($bd){
   print_r($_POST);
-  $contenuDiv = "<h2>Voyons voir les valeurs post transmise<h2>";
+  $contenuDiv = "<h2>Manipuler les post transmise et les interpréter<h2>";
   /* STOCKER LES VALEURS POST EN SESSION POUR LES UTILISER LORS DE LA QUERY */
-  $_SESSION['ChangeData'] = True;
+  return $contenuDiv;
+}
+/*===FONCTION CONFIRME LES VALEURS DE MODIFICATIONS MOT DE PASSE===*/
+
+/*La fonction prend en paramètre la Connection à la base de donnée
+Elle recoit les valeur POST les stock puis affiche en contenu DIV */
+
+function conf_pswd ($bd){
+  print_r($_POST);
+  $contenuDiv = "<h2>Manipuler les post transmise et les interpréter<h2>";
+  /* STOCKER LES VALEURS POST EN SESSION POUR LES UTILISER LORS DE LA QUERY */
   return $contenuDiv;
 }
 /*===FONCTION AJOUTER UN UTILISATEUR LINUX ET DANS LA DB===*/
@@ -276,30 +300,29 @@ function add_user_Unix_DB ($bd){
               VALUES ('".$_SESSION['usager_ID']."', '".$_SESSION['usager_ID']."', '".$_SESSION['nom_utilisateur']."', '".$_SESSION['user_password']."',
                 '".$_SESSION['expiration_password']."')");
   /*section pour UNIX*/
-  //$userCaliss = $_SESSION['nom_utilisateur'];
-  //$passCaliss = $_SESSION['user_password'];
-  //$crissDe = "sudo chpasswd <<< '".$userCaliss.":".$passCaliss."'";
-  exec("sudo useradd ".$_SESSION['nom_utilisateur']." -m");
-  //shell_exec($crissDe);
-  //exec('sudo echo '".$_SESSION['user_password']."' | passwd --stdin ".$_SESSION['nom_utilisateur']);
-
+  exec("sudo useradd ".$_SESSION['nom_utilisateur']);
+  exec("sudo mkdir /home/".$_SESSION['nom_utilisateur']);
+  exec("sudo chown ".$_SESSION['nom_utilisateur']." /home/".$_SESSION['nom_utilisateur']);
   //trouver un script qui va modifier le user_password dans Linux
 
   exec("sudo mkdir /quota/".$_SESSION['nom_utilisateur']);
   exec("sudo chown ".$_SESSION['nom_utilisateur']." /quota/".$_SESSION['nom_utilisateur']);
   exec("sudo chmod 700 /quota/".$_SESSION['nom_utilisateur']);
+                                        // pas de soft / la valeur entrée en hard / 50 fichiers soft 75 hard
+  exec("sudo setquota -u ".$_SESSION['nom_utilisateur']." 0 ".$_SESSION['quota']."G 50 75  -a /dev/sdb1");
   /*entrée dans l'historique_password*/
-  $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['usager_ID']."', '1', CURRENT_DATE(), 'None');");
+  $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['usager_ID']."', '1', CURRENT_DATE(), 'Inscription');");
 }
 /*===FONCTION LISTER LES UTILISATEUR===*/
 /*La fonction prend en paramètre la Connection à la base de donnée
 Elle retourne une liste en contenu DIV que si on clique sur un user
 on peut modifier ses informations (mod_user)*/
 
-function list_user ($bd){
+function list_user ($bd,$contexte){
 
   $contenuDiv = "";
   $var_vect_User  = [];
+  $var_vect_UserN  = [];
   $var_IndiceChamp = 0;
   $var_i = 1;
   $var_ValChamp    = "";
@@ -323,11 +346,29 @@ function list_user ($bd){
     {
       foreach($var_vect_User as $var_IndiceChamp => $var_ValChamp)
       {
-        $contenuDiv .=
-        "<div><li><a href='./admin.php?menu=mod_user&user=".($var_IndiceChamp+$var_i).
-        "'>".$var_ValChamp."</a></li></div>".PHP_EOL;
+        if ($contexte == 0)
+        {
+          $contenuDiv .=
+          "<div><li><a href='./admin.php?menu=mod_user&user=".($var_IndiceChamp+$var_i).
+          "'>".$var_ValChamp."</a></li></div>".PHP_EOL;
+        }
+        else
+        {
+          $contenuDiv .=
+          "<div><li><a href='./admin.php?menu=mod_user&user=".($var_IndiceChamp+$var_i).
+          "'>".$var_ValChamp."</a></li></div>".PHP_EOL;
+        }
         $contenuDiv .= "<div>".PHP_EOL;
-        $contenuDiv .= Generate_UserDetails($var_IndiceChamp+$var_i);
+        if ($contexte == 0)
+        {
+          $contenuDiv .= Generate_UserDetails($var_IndiceChamp+$var_i);
+        }
+        else
+        {
+          $reqUser2 = $bd->query("SELECT nom_utilisateur FROM Comptes WHERE usager_ID=".($var_IndiceChamp+$var_i));
+          $var_vect_UserN  = $reqUser2->fetch(PDO::FETCH_ASSOC);
+          $contenuDiv .= quotaUser($var_vect_UserN['nom_utilisateur']);
+        }
         $contenuDiv .= "</div>".PHP_EOL;
         $var_i++;
       }
@@ -420,7 +461,8 @@ $req_1 = $bd->query("SELECT nom_departement FROM Departements");
 $DeptCount = $req_1->rowCount();
 //Construction dynamique de la liste des départements
 $contenuDiv .=
-  "<select name='dept' id='dept' size=".$DeptCount."'>".PHP_EOL;
+  "<div>" . PHP_EOL.
+  "<select name='dept' id='dept' size='".$DeptCount."' class='formDept'>".PHP_EOL;
 //Tant que tu as des départements, créer une option
 while($var_vect_Dept = $req_1->fetch(PDO::FETCH_ASSOC))
 {
@@ -433,7 +475,8 @@ $var_i++;
 }
 //fermeture du select
 $contenuDiv .=
-  "</select>".PHP_EOL;
+  "</select>".PHP_EOL."</div>";
+
 return $contenuDiv;
 }
 /*===FONCTION GÉNÉRER LA LISTE DES UTILISATEURS===*/
@@ -480,24 +523,22 @@ $UserCount = ($req_1->rowCount())+1;
       return $contenuDiv;
 }
 /*===FONCTION FORMULAIRE MODIFIER UTILISATEUR===*/
-
 /*La fonction prend en paramètre la Connection à la base de donnée
 Elle retourne un formulaire POST en contenu DIV */
-
 function mod_user ($bd){
   $contenuDiv = "";
   $contenuDiv =
     "<form method='POST' ACTION='./admin.php?menu=confUserMod_page'>".PHP_EOL.
       "<table cellpadding='10px'>".PHP_EOL.
           "<tr class='ModifyTop'>".PHP_EOL.
-            "<td><label for='dept' class='ModifyTop'>Utilisateur à modifier: </label>".PHP_EOL;
+            "<td class='formDept'><label for='dept' class='ModifyTop'>Utilisateur à modifier: </label>".PHP_EOL;
             //Construction dynamique de la liste des utilisateurs
       $contenuDiv .= Generate_User($bd);
             //fermeture
       $contenuDiv .=
             "</td>".PHP_EOL.
-            "<td><label for='dept' class='ModifyTop'>Info à modifier: </label>".PHP_EOL.
-            "<select name='infoTag' id='infoTag' onclick='FlagDept()' size='7'>".PHP_EOL.
+            "<td class='formDept'><label for='dept' class='ModifyTop'>Info à modifier: </label>".PHP_EOL.
+            "<select name='infoTag' id='infoTag' onclick='FlagDept()' size='6'>".PHP_EOL.
             "<option value='1'>Nom de famille</option>".PHP_EOL.
             "<option value='2'>Prénom</option>".PHP_EOL.
             "<option value='3'># de tél.(domicile)</option>".PHP_EOL.
@@ -515,7 +556,7 @@ function mod_user ($bd){
             "Nom du département</option>".PHP_EOL.
             "</select>".PHP_EOL.
             "</td>".PHP_EOL.
-            "<td valign='top' id='infoTagTD'>";
+            "<td valign='top' id='infoTagTD' class='formDept'>";
             if (isset($_GET['deptFlag']))
             {
               $contenuDiv .=
@@ -525,20 +566,17 @@ function mod_user ($bd){
             $contenuDiv .=
             "</td>".PHP_EOL.
             "</tr>".PHP_EOL.
-            "<tr display='inline-block'>".PHP_EOL.
-            "<td valign='top'>".PHP_EOL.
-            "<input type='submit' name='ctrl_backMain' value='Annuler'></input>".PHP_EOL.
-            "<input type='Submit' name='submitModUser' value='Soumettre'></input></td>".PHP_EOL.
+            "<tr>".PHP_EOL.
+            "<td align='center' colspan='3'>".PHP_EOL.
+            "<input type='Submit' name='submitModUser' value='Soumettre'></input>".PHP_EOL.
+            "<input type='button' onclick='FlagMain()' value='Annuler'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
         "</table>".PHP_EOL.
       "</form>".PHP_EOL;
-
     return $contenuDiv;
 }
 /*===FONCTION GÉNÉRER L'HISTORIQUE DES CHANGEMENTS MOT DE DE PASSE===*/
-
 //Elle retourne une table personnalisée par la requête SQL*/
-
 function Generate_PwHistory()
 {
 /*Variable générale*/
@@ -611,7 +649,7 @@ function quotaUser ($user){
   $TabCommandeResultSplit = explode(" ", $varCommandeResult);
 
   //commande de Débug
-  print_r($TabCommandeResultSplit);
+  //print_r($TabCommandeResultSplit);
 
   //Je récupere seulement lespace total et utilisé de l'utilisateur
   $varUserEspaceTotal = $TabCommandeResultSplit[4];
@@ -624,7 +662,7 @@ function quotaUser ($user){
   $varUserEspaceUtil = round($varUserEspaceUtil, 4);
   //je véfifie si l'utilisateur à un quota
   if ($varUserEspaceTotal == 0){
-    $varQuotaUser = "Vous n'avez pas de quota défini.";
+    $varQuotaUser = "<h3 class='large'>Aucun quota défini</h3>";
   } else {
     $varQuotaUser = $varUserEspaceUtil . " Go/" . $varUserEspaceTotal . " Go utilisés.";
   }
@@ -637,8 +675,11 @@ function contactAdmin(){
   $varFormulaire = "<form action='./user.php?menu=contact_admin' method='POST'>" . PHP_EOL .
                    "<label for='objet'>Objet : </label>" . PHP_EOL .
                    "<input type='text' name='objet' id='objet' size='80'></input>" . PHP_EOL .
-                   "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>" . PHP_EOL .
-                   "<input type='submit' name='ctrl_envoi_mail' width='50px' value='Envoyer'></input>" . PHP_EOL;
+                   "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>".
+                   PHP_EOL . "</br>" . PHP_EOL.
+                   "<input type='submit' name='ctrl_envoi_mail' width='50px' value='Envoyer'></input>" . PHP_EOL.
+                   "<input type='reset' width='50px' value='Effacer'></input>" . PHP_EOL.
+                   "<input type='button' onclick='FlagMainU()' width='50px' value='Annuler'></input>" . PHP_EOL;
   return $varFormulaire;
 }
 
