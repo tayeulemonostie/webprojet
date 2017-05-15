@@ -96,12 +96,6 @@ if (isset($_SESSION['username']))
               "<h2>Modifier un mot de passe</h2>".PHP_EOL.
               pwd_chngForm("admin", $bd);
               break;
-      case 'confchmdp':
-        $newpass = "caca";
-        $testnom = "lol";
-        print_r($_POST);
-        exec(".././script.sh $testnom $newpass");
-        break;
       case 'pwd_hist':
           $varHTML .=
               "<h2>Historique des changements de mot de passe</h2>".PHP_EOL;
@@ -155,36 +149,42 @@ if (isset($_SESSION['username']))
              "<h2>Confirmation la fermeture de session</h2>".PHP_EOL.
              "<form action='./admin.php?menu=clr_sess' method='POST'>".PHP_EOL.
     			   "<input type='submit' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input>".PHP_EOL.
-             "<input type='button' onclick='FlagMain('admin')' value='Retour'></input>".PHP_EOL.
+             "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
     			   "</form>".PHP_EOL;
               break;
       case 'conf_page':
-      print_r($_POST);
           $varHTML .=
              "<h2>Confirmation de l'ajout à la base de donnée</h2>".PHP_EOL.
              //c'est à l'intérieur de cette fonction que les variables session pour les requêtes sont crées
              conf_create($bd).
              "<form action='./admin.php?menu=user_todo' method='POST'>".PHP_EOL.
              "<input type='submit' name ='ctrl_AddUser' width='50px' value='Ajouter'</input>".PHP_EOL.
-             "<input type='button' onclick='FlagMain('admin')' value='Annuler'></input>".PHP_EOL.
+             "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
              "</form>".PHP_EOL;
               break;
       case 'confUserMod_page':
-        print_r($_POST);
           $varHTML .=
             "<h2>Confirmation de la modification à la base de donnée</h2>".PHP_EOL.
-            //c'est à l'intérieur de cette fonction que les variables session pour les requêtes sont créés
               conf_modify($bd).
               "<form action='./admin.php?menu=mod_todo' method='POST'>".PHP_EOL.
               "<input type='submit' name ='ctrl_modUser' width='50px' value='Modifier'</input>".PHP_EOL.
-              "<input type='button' onclick='FlagMain('admin')' value='Annuler'></input>".PHP_EOL.
+              "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
+              "</form>".PHP_EOL;
+              break;
+      case 'confchmdp':
+          $varHTML .=
+              "<h2>Confirmation de la modification à la base de donnée</h2>".PHP_EOL.
+              conf_pswd($bd).
+              "<form action='./admin.php?menu=pswd_todo' method='POST'>".PHP_EOL.
+              "<input type='submit' name ='ctrl_PWChng' width='50px' value='Modifier'</input>".PHP_EOL.
+              "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
               "</form>".PHP_EOL;
               break;
       //Lorsque l'admin confirme l'ajout d'un utilisateur (L'exécution en background)
       case 'user_todo':
           if ($_POST['ctrl_AddUser'] == "Ajouter")
           {
-            $_SESSION['ChangeData'] == True;
+            $_SESSION['ChangeData'] = True;
           }
           else
           {
@@ -194,9 +194,9 @@ if (isset($_SESSION['username']))
           {
             add_user_Unix_DB($bd);
             $varHTML .=
-            "<h2>Utilisateur ajouté!</h2>".PHP_EOL;
+            "<h2>Utilisateur ajouté!</h2>".PHP_EOL.
             "<form action='./admin.php' method='POST'>".PHP_EOL.
-            "<input type='button' onclick='FlagMain('admin')' value='Retour'></input>".PHP_EOL.
+            "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
             "</form>".PHP_EOL;
           }
           break;
@@ -204,7 +204,7 @@ if (isset($_SESSION['username']))
       case 'mod_todo':
           if ($_POST['ctrl_modUser'] == "Modifier")
           {
-            $_SESSION['ChangeData'] == True;
+            $_SESSION['ChangeData'] = True;
           }
           else
           {
@@ -212,12 +212,11 @@ if (isset($_SESSION['username']))
           }
           if ($_SESSION['ChangeData'] == True)
           {
-            // FAIRE UNE FONCTION QUI VA MANIPULER LES 3 VALEURS POST RECUE
-            // (USAGER_ID, LE CHAMP À MODIFIER, LA VALEUR ENTRÉE (FAIRE UN SWITCH SELON LA VALEUR RECUE))
+            $bd->query("UPDATE Usagers_description SET ".$_SESSION['champModBD']." = '".$_SESSION['data']."' WHERE Usagers_description.usager_ID = ".$_SESSION['usager_ID']);
             $varHTML .=
-            "<h2>Utilisateur modifié!</h2>".PHP_EOL;
+            "<h2>Utilisateur modifié!</h2>".PHP_EOL.
             "<form action='./admin.php' method='POST'>".PHP_EOL.
-            "<input type='button' onclick='FlagMain('admin')' value='Retour'></input>".PHP_EOL.
+            "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
             "</form>".PHP_EOL;
           }
           else
@@ -225,6 +224,30 @@ if (isset($_SESSION['username']))
             header('Location: ./admin.php?menu=mod_user');
           }
           break;
+      case 'pswd_todo':
+            if ($_POST['ctrl_PWChng'] == "Modifier")
+              {
+                $_SESSION['ChangeData'] = True;
+              }
+              else
+              {
+                header('Location: ./admin.php?menu=pwd_chng');
+              }
+              if ($_SESSION['ChangeData'] == True)
+              {
+                $bd->query("UPDATE Comptes SET expiration_password=NOW() + INTERVAL 90 DAY, user_password='".$_SESSION['data']."' WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
+                $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '1', CURRENT_DATE(), '".$_SESSION['OldPassUser']."');");
+                exec(".././script.sh ".$_SESSION['nom_utilisateur']." ".$_SESSION['data']);
+                $varHTML .=
+                "<h2>Utilisateur modifié!</h2>".PHP_EOL.
+                "<form action='./admin.php' method='POST'>".PHP_EOL.
+                "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
+                "</form>".PHP_EOL;
+              }
+              else
+              {
+                header('Location: ./admin.php?menu=pwd_chng');
+              }
       default:
           break;
      }
