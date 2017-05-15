@@ -155,7 +155,11 @@ function pwd_chngForm($page, $bd)
   if ($page == "admin")
   {
     $contenuDiv .=
-    Generate_User($bd);
+    Generate_User($bd).
+    "<table class='formPassword'>" . PHP_EOL .
+    "<tr>" .PHP_EOL.
+    "<td><label for='new_pass'>*Nouveau Password</label></td>" . PHP_EOL.
+    "<td><input type='password' name='new_pass' id='new_pass'></input></td></tr></table>" . PHP_EOL;
   }
   else
   {
@@ -163,12 +167,11 @@ function pwd_chngForm($page, $bd)
     "<table class='formchgmdp' align='center'>" . PHP_EOL .
     "<tr>" .PHP_EOL.
       "<td class='formchgmdp'>" . "<label for='old_pass'>*Ancien mot de passe : </label></td>" . PHP_EOL.
-      "<td class='formchgmdp'><input type='password' name='old_pass' id='old_pass'></input></td></tr>" . PHP_EOL;
+      "<td class='formchgmdp'><input type='password' name='old_pass' id='old_pass'></input></td></tr>" . PHP_EOL.
+      "<tr>" .PHP_EOL.
+      "<td class='formchgmdp'><label for='new_pass'>*Nouveau Password</label></td>" . PHP_EOL.
+      "<td class='formchgmdp'><input type='password' name='new_pass' id='new_pass'></input></td></tr>" . PHP_EOL;
   }
-    $contenuDiv .=
-    "<tr>" .PHP_EOL.
-    "<td class='formchgmdp'><label for='new_pass'>*Nouveau Password</label></td>" . PHP_EOL.
-    "<td class='formchgmdp'><input type='password' name='new_pass' id='new_pass'></input></td></tr>" . PHP_EOL;
   if ($page == "user")
   {
     $contenuDiv .=
@@ -182,8 +185,8 @@ function pwd_chngForm($page, $bd)
   else
   {
     $contenuDiv .=
-    "<input type='submit' name='ctrl_PWChange' value='Soumettre'></input>" .PHP_EOL.
-    "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL;
+    "<input type='submit' class='formPassword' name='ctrl_PWChange' value='Soumettre'></input>" .PHP_EOL.
+    "<input type='button' class='formPassword' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL;
   }
   $contenuDiv .=
   "</form>" . PHP_EOL;
@@ -268,10 +271,19 @@ function conf_create ($bd){
 /*La fonction prend en paramètre la Connection à la base de donnée
 Elle recoit les valeur POST les stock puis affiche en contenu DIV */
 
-function conf_modify ($bd){
-  print_r($_POST);
-  $contenuDiv = "<h2>Manipuler les post transmise et les interpréter<h2>";
-  /* STOCKER LES VALEURS POST EN SESSION POUR LES UTILISER LORS DE LA QUERY */
+function conf_modify ($bd)
+{
+  Generate_QueryDetails($bd);
+  $contenuDiv = "<h3>Vous désirez changer le champ ".$_SESSION['verbose']." de l'utilisateur ".$_SESSION['userToMod']." pour ";
+  if ($_POST['infoTag'] == 6)
+  {
+    $contenuDiv .= $_SESSION['deptToMod'];
+  }
+  else
+  {
+    $contenuDiv .= $_SESSION['data'];
+  }
+  $contenuDiv .= "</h3>";
   return $contenuDiv;
 }
 /*===FONCTION CONFIRME LES VALEURS DE MODIFICATIONS MOT DE PASSE===*/
@@ -279,10 +291,25 @@ function conf_modify ($bd){
 /*La fonction prend en paramètre la Connection à la base de donnée
 Elle recoit les valeur POST les stock puis affiche en contenu DIV */
 
-function conf_pswd ($bd){
-  print_r($_POST);
-  $contenuDiv = "<h2>Manipuler les post transmise et les interpréter<h2>";
-  /* STOCKER LES VALEURS POST EN SESSION POUR LES UTILISER LORS DE LA QUERY */
+function conf_pswd ($bd)
+{
+  // requête pour verbalisé le user_ID
+  $reqUser = $bd->query("SELECT CONCAT(prenom,' ',nom) AS username FROM Usagers_description WHERE usager_ID=".$_POST['user']);
+  $username = $reqUser->fetch(PDO::FETCH_ASSOC);
+  $_SESSION['userToMod'] = $username['username'];
+
+  // requête pour stocker l'ancien mot de passe de l'usager
+  $reqUser = $bd->query("SELECT user_password AS userpswd FROM Comptes WHERE usager_ID=".$_POST['user']);
+  $userpswd = $reqUser->fetch(PDO::FETCH_ASSOC);
+
+  $usernameQuerry = $bd->query("SELECT nom_utilisateur FROM Comptes WHERE Comptes.compte_ID='".$_POST['user']."';");
+  $username = $usernameQuerry->fetch(PDO::FETCH_ASSOC);
+
+  $_SESSION['nom_utilisateur'] = $username['nom_utilisateur'];
+  $_SESSION['OldPassUser'] = $userpswd['userpswd'];
+  $_SESSION['ID_usager'] = $_POST['user'];
+  $_SESSION['data'] = $_POST['new_pass'];
+  $contenuDiv = "<h3>Vous désirez changer le mot de passe de l'utilisateur ".$_SESSION['userToMod']." pour ".$_SESSION['data']."</h3>";
   return $contenuDiv;
 }
 /*===FONCTION AJOUTER UN UTILISATEUR LINUX ET DANS LA DB===*/
@@ -303,7 +330,7 @@ function add_user_Unix_DB ($bd){
   exec("sudo useradd ".$_SESSION['nom_utilisateur']);
   exec("sudo mkdir /home/".$_SESSION['nom_utilisateur']);
   exec("sudo chown ".$_SESSION['nom_utilisateur']." /home/".$_SESSION['nom_utilisateur']);
-  //trouver un script qui va modifier le user_password dans Linux
+  exec(".././script.sh ".$_SESSION['nom_utilisateur']." ".$_SESSION['user_password']);
 
   exec("sudo mkdir /quota/".$_SESSION['nom_utilisateur']);
   exec("sudo chown ".$_SESSION['nom_utilisateur']." /quota/".$_SESSION['nom_utilisateur']);
@@ -462,7 +489,7 @@ $DeptCount = $req_1->rowCount();
 //Construction dynamique de la liste des départements
 $contenuDiv .=
   "<div>" . PHP_EOL.
-  "<select name='dept' id='dept' size='".$DeptCount."' class='formDept'>".PHP_EOL;
+  "<select name='infoMod' id='infoMod' size='".$DeptCount."' class='formDept'>".PHP_EOL;
 //Tant que tu as des départements, créer une option
 while($var_vect_Dept = $req_1->fetch(PDO::FETCH_ASSOC))
 {
@@ -636,6 +663,54 @@ $contenu .= "<table>" . PHP_EOL . "<tr>" . PHP_EOL;
     $contenu .= "</tr>".PHP_EOL."</table>";
 return $contenu;
 }
+// FONCTION GÉNÉRER LES VARIABLES DE SESSION POUR MODIFIER L'utilisateur
+
+function Generate_QueryDetails($bd)
+{
+  print_r($_POST);
+
+  // requête pour verbalisé le user_ID
+  $reqUser = $bd->query("SELECT CONCAT(prenom,' ',nom) AS username FROM Usagers_description WHERE usager_ID=".$_POST['user']);
+  $username = $reqUser->fetch(PDO::FETCH_ASSOC);
+  $_SESSION['userToMod'] = $username['username'];
+  // requête pour verbalisé le dept_ID
+  $reqDept = $bd->query("SELECT nom_departement FROM Departements WHERE departements_ID = ".$_POST['infoMod']);
+  $departe = $reqDept->fetch(PDO::FETCH_ASSOC);
+  $_SESSION['deptToMod'] = $departe['nom_departement'];
+
+  $_SESSION['data'] = $_POST['infoMod'];
+  $_SESSION['usager_ID'] = $_POST['user'];
+  switch ($_POST['infoTag'])
+  {
+    case 1:
+          $_SESSION['verbose'] = 'nom de famille';
+          $_SESSION['champModBD'] = 'nom';
+          break;
+    case 2:
+          $_SESSION['verbose'] = 'prénom';
+          $_SESSION['champModBD'] = 'prenom';
+          break;
+    case 3:
+          $_SESSION['verbose'] = '# de tél.(domicile)';
+          $_SESSION['champModBD'] = 'no_tel_nom';
+          break;
+    case 4:
+          $_SESSION['verbose'] = '# de poste téléphonique';
+          $_SESSION['champModBD'] = 'no_tel_poste';
+          break;
+    case 5:
+          $_SESSION['verbose'] = '# de machine';
+          $_SESSION['champModBD'] = 'no_machine';
+          break;
+    case 6:
+          $_SESSION['verbose'] = 'nom du département';
+          $_SESSION['champModBD'] = 'departements_ID';
+          break;
+    default:
+          header('Location: ./admin.php');
+          break;
+  }
+}
 /*=================== FONCTION POUR LE USER ===================*/
 
 /*fonction quota*/
@@ -723,42 +798,21 @@ function mailtoadmin($sujet, $message){
 }
 
 /*fonction pour changer de mot de passe*/
-function changementmotdepasse($oldpass, $newpass, $confnewpass, $bd, $page){
+function changementmotdepasse($oldpass, $newpass, $bd)
+{
 //================== FAIRE LE LINUX CHANGEMENT DE MOT DE PASSE ==============
-/*update expiration passwoird aussi*/
-  if ($page === "user"){
-    if($_SESSION['OldPassUser'] == $oldpass){
-      if($newpass == $confnewpass){
+/*update expiration password aussi*/
+    if($_SESSION['OldPassUser'] == $oldpass)
+    {
         $bd->query("UPDATE Comptes SET expiration_password=NOW() + INTERVAL 90 DAY, user_password=\"$newpass\" WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
         //grab le username de l'utilisateur
         $usernameQuerry = $bd->query("SELECT nom_utilisateur FROM Comptes WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
-
-
-        //CHU RENDU ICITRE CRISEE !!!!!!!!!!
-        //LINUX STUFF...
-        exec(".././script.sh $usernameQuerry $newpass");
-        //request dans histopassword
-
-
-        if($_SESSION['departement'] == 4){
-          //mettre 1 a modif_admin
-          $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '1', CURRENT_DATE(), '".$oldpass."');");
-        } else{
-          //request pour historique password
-          $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '0', CURRENT_DATE(), '".$oldpass."');");
-        }
-      } else{
-        $result = "passnotmatch";
-        return $result;
-      }
-    } else{
-        $result = "nooldpass";
-        return $result;
+        $username = $usernameQuerry->fetch(PDO::FETCH_ASSOC);
+        //LINUX
+        exec(".././script.sh ".$username['nom_utilisateur']." ".$newpass);
+        //insert dans histopassword
+        $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '0', CURRENT_DATE(), '".$oldpass."');");
     }
-  } elseif ($page === "admin"){
-
-  }
-
 }
 
 

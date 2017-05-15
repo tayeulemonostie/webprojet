@@ -144,7 +144,7 @@ else
       }
       break;
     case 'mdptodo':
-      changementmotdepasse($_POST['old_pass'], $_POST['new_pass'], $_POST['pass_confirm'], $bd);
+      changementmotdepasse($_POST['old_pass'], $_POST['new_pass'], $bd);
       $varZoneContenue =  "<h2>Changement de mot de passe effectué</h2>" . PHP_EOL.
                           "<table align='center'>" . PHP_EOL .
                           "<tr>" . PHP_EOL .

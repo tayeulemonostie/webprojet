@@ -93,6 +93,11 @@ h1 {
   align:center;
   padding-left:120px;
 }
+/*pour le formulaire créé un user*/
+.formPassword {
+  display:inline-block;
+  vertical-align:top;
+}
 
 /*POUR LE FORMULAIRE CHAMNGEMENT MOT DE PASSE USER*/
 .formchgmdp {
