@@ -96,6 +96,12 @@ if (isset($_SESSION['username']))
               "<h2>Modifier un mot de passe</h2>".PHP_EOL.
               pwd_chngForm("admin", $bd);
               break;
+      case 'confchmdp':
+        $newpass = "caca";
+        $testnom = "lol";
+        print_r($_POST);
+        exec(".././script.sh $testnom $newpass");
+        break;
       case 'pwd_hist':
           $varHTML .=
               "<h2>Historique des changements de mot de passe</h2>".PHP_EOL;

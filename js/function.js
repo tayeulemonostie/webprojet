@@ -29,3 +29,40 @@ function FlagMainU()
 {
       window.location.href = 'http://localhost/webprojet/webprojet/php/user.php';
 }
+
+
+//fonctions pour vérifier formulaire changement password section user
+function validationFormulaire(){
+  var old_pass = document.getElementById("old_pass").value;
+  var new_pass = document.getElementById("new_pass").value;
+  var pass_confirm = document.getElementById("pass_confirm").value;
+  var flagerror = false;
+  //vérification tout champs non vide
+  if(old_pass !== "" && new_pass !== "" && pass_confirm !== ""){
+    //vérification que l'utilisateur ne marque pas lancien password comme nouveau
+    if(old_pass === new_pass){
+      //afficher un message d'erreur
+      alert("veuillez ne pas utiliser votre ancien mot de passe pour votre nouveau.");
+      //Lever de flag d'erreur
+      flagerror = true;
+    } else {
+      //vérification que le nouveau password et confirmation sont pareil
+      if(new_pass === pass_confirm){
+      } else{
+        //afficher un message d'erreur
+        alert("Votre nouveau de passe et la confirmation du mot de passe ne correspond pas.");
+        flagerror = true;
+      }
+    }
+  } else {
+    //afficher un message d'erreur
+    alert("Veuillez ne laisser aucun champs vide avec une \"*\"");
+    //on "reload la page pour qu'il puissse recommencer"
+    flagerror = true;
+  }
+  if(flagerror === true){
+    window.location.href = 'http://localhost/webprojet/webprojet/php/user.php?menu=chmdp';
+  } else{
+    document.userchgmdp.submit();
+  }
+}

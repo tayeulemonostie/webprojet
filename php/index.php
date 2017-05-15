@@ -19,6 +19,7 @@ DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
 /*Démarage de session*/
 session_start();
 
+$_SESSION['JSenabled'] = 0;
 /*===== section link php ======*/
 require "functions.php";
 
@@ -37,13 +38,16 @@ catch(PDOExeption $e){
 //$_SESSION['bd'] = $bd;
 
 /*Génération de la Page Test de fonctions login*/
-$varHTML = "<h1>Page d'authentification</h1>" . PHP_EOL
+
+
+$varHTML = "<div id=\"userpass\">" . PHP_EOL .
+           "<h1 id=\"titlelogin\">Page d'authentification</h1>" . PHP_EOL
            . "<h3>Veuillez inscrire votre nom d'utilisateur et mot de passe</h3>" . PHP_EOL
            . "<form method=\"POST\" action=\"index.php\">" . PHP_EOL
            . " </br> Login : <input type=\"text\" name=\"login\"/> </br></br>" . PHP_EOL
            . "Password : <input type=\"password\" name=\"password\"/> </br>" . PHP_EOL
            . "</br> <input type=\"submit\" name=\"submit\" value=\"Se connecter\"/>" . PHP_EOL
-           . "</form>";
+           . "</form>" . PHP_EOL . "</div>";
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
 if (isset($_POST["login"]) && isset($_POST["password"])){
@@ -76,7 +80,7 @@ if (isset($_POST["login"]) && isset($_POST["password"])){
     <title>WEBPROJET</title>
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
   </head>
-  <body>
+  <body id="login">
     <?PHP echo $varHTML ?>
   </body>
 </html>

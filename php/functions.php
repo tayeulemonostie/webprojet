@@ -151,7 +151,7 @@ Elle retourne un formulaire POST  */
 function pwd_chngForm($page, $bd)
 {
   $contenuDiv =
-  "<form action='./".$page.".php?menu=confchmdp' method='POST'>" . PHP_EOL;
+  "<form name='userchgmdp' action='./".$page.".php?menu=confchmdp' method='POST'>" . PHP_EOL;
   if ($page == "admin")
   {
     $contenuDiv .=
@@ -160,25 +160,24 @@ function pwd_chngForm($page, $bd)
   else
   {
     $contenuDiv .=
-    "<label for='old_pass'>Ancien mot de passe : </label>" . PHP_EOL.
-    "<input type='password' name='old_pass' id='old_pass'></input>" . PHP_EOL;
+    "<table class='formchgmdp' align='center'>" . PHP_EOL .
+    "<tr>" .PHP_EOL.
+      "<td class='formchgmdp'>" . "<label for='old_pass'>*Ancien mot de passe : </label></td>" . PHP_EOL.
+      "<td class='formchgmdp'><input type='password' name='old_pass' id='old_pass'></input></td></tr>" . PHP_EOL;
   }
     $contenuDiv .=
-    "<br/>" . PHP_EOL.
-    "<br/>" . PHP_EOL.
-    "<label for='new_pass'>Nouveau Password</label>" . PHP_EOL.
-    "<input type='password' name='new_pass' id='new_pass'></input>" . PHP_EOL.
-    "<br/>" . PHP_EOL.
-    "<br/>" . PHP_EOL;
+    "<tr>" .PHP_EOL.
+    "<td class='formchgmdp'><label for='new_pass'>*Nouveau Password</label></td>" . PHP_EOL.
+    "<td class='formchgmdp'><input type='password' name='new_pass' id='new_pass'></input></td></tr>" . PHP_EOL;
   if ($page == "user")
   {
     $contenuDiv .=
-    "<label for='pass_confirm'>Confirmation Password</label>" . PHP_EOL.
-    "<input type='password' name='pass_confirm' id='pass_confirm'></input>" . PHP_EOL.
-    "<br/>" . PHP_EOL.
-    "<br/>" . PHP_EOL.
-    "<input type='submit' value='Soumettre'></input>" .PHP_EOL.
-    "<input type='button' onclick='FlagMainU()' value='Annuler'></input>".PHP_EOL;
+    "<tr>" . PHP_EOL.
+    "<td><label for='pass_confirm'>*Confirmation Password</label></td>" . PHP_EOL.
+    "<td><input type='password' name='pass_confirm' id='pass_confirm'></input></td></tr>" . PHP_EOL.
+    "<tr>" .PHP_EOL .
+    "<td><input type='submit' value='Soumettre' onclick='validationFormulaire();'></input></td>" .PHP_EOL .
+    "<td><input type='button' onclick='FlagMainU()' value='Annuler'></input></td><tr></table>".PHP_EOL;
   }
   else
   {
@@ -190,6 +189,7 @@ function pwd_chngForm($page, $bd)
   "</form>" . PHP_EOL;
   return $contenuDiv;
 }
+
 /*===FONCTION CONFIRME LE NOUVEL UTILISATEUR===*/
 
 /*La fonction prend en paramètre la Connection à la base de donnée
@@ -655,7 +655,7 @@ function quotaUser ($user){
   $varUserEspaceTotal = $TabCommandeResultSplit[4];
   $varUserEspaceUtil = $TabCommandeResultSplit[2];
 
-  //Passage de Bytes en Mb pour la beauté de la chose
+  //Passage de KBytes en Go pour la beauté de la chose
   $varUserEspaceUtil = (double)$varUserEspaceUtil / (1024*1024);
   $varUserEspaceTotal = (double)$varUserEspaceTotal / (1024*1024);
 
@@ -671,71 +671,94 @@ function quotaUser ($user){
 
 /*fonction Contactert administrateur*/
 function contactAdmin(){
-  /*VOIRE COMMENT FAIRE DU AJAX POUR CA*/
-  $varFormulaire = "<form action='./user.php?menu=contact_admin' method='POST'>" . PHP_EOL .
-                   "<label for='objet'>Objet : </label>" . PHP_EOL .
-                   "<input type='text' name='objet' id='objet' size='80'></input>" . PHP_EOL .
-                   "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>".
-                   PHP_EOL . "</br>" . PHP_EOL.
-                   "<input type='submit' name='ctrl_envoi_mail' width='50px' value='Envoyer'></input>" . PHP_EOL.
-                   "<input type='reset' width='50px' value='Effacer'></input>" . PHP_EOL.
-                   "<input type='button' onclick='FlagMainU()' width='50px' value='Annuler'></input>" . PHP_EOL;
+  $varFormulaire = "<table align='center'>". PHP_EOL .
+                   "<tr>" . PHP_EOL .
+                      "<td align='center'>" . PHP_EOL .
+                         "<form action='./user.php?menu=contact_admin' method='POST'>" . PHP_EOL .
+                         "<label for='objet'>Objet : </label>" . PHP_EOL .
+                         "<input type='text' name='objet' id='objet' size='80'></input>" . PHP_EOL . "</br></br>" . PHP_EOL .
+                         "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>".
+                         PHP_EOL . "</br>" . PHP_EOL.
+                         "<input type='submit' name='ctrl_envoi_mail' width='50px' value='Envoyer'></input>" . PHP_EOL.
+                         "<input type='reset' width='50px' value='Effacer'></input>" . PHP_EOL.
+                         "<input type='button' onclick='FlagMainU()' width='50px' value='Annuler'></input>" .
+                      "</td>" . PHP_EOL.
+                    "</tr>" . PHP_EOL .
+                   "</table>" . PHP_EOL;
   return $varFormulaire;
 }
 
 function mailtoadmin($sujet, $message){
   $mail = new PHPMailer();
-  $mail->IsSMTP(); // send via SMTP
-  $mail->SMTPAuth = true; // turn on SMTP authentication
-  $mail->Username = "websebyves@gmail.com"; // Enter your SMTP username
-  $mail->Password = "Tabarnak2017"; // SMTP password
-  $webmaster_email = "websebyves@gmail.com"; //Add reply-to email address
-  $email="devaster.64@gmail.com"; // Add recipients email address
-  $name="Yves"; // Add Your Recipient’s name
+  $mail->IsSMTP();
+  $mail->SMTPAuth = true;
+  $mail->Username = "websebyves@gmail.com";
+  $mail->Password = "Tabarnak2017";
+  $webmaster_email = "websebyves@gmail.com";
+  $email="devaster.64@gmail.com";
+  $name="Yves";
   $mail->From = $webmaster_email;
   $mail->FromName = "Webmaster";
   $mail->AddAddress($email,$name);
   $mail->AddReplyTo($webmaster_email,"Webmaster");
-  //$mail->WordWrap = "<strong>50</strong>"; // set word wrap
-  //$mail->AddAttachment("/var/tmp/file.tar.gz"); // attachment
-  //$mail->AddAttachment("/tmp/image.jpg”, “new.jpg"); // attachment
-  $mail->IsHTML(true); // send as HTML
+  $mail->IsHTML(true);
 
   $mail->Subject = $sujet;
 
-  $mail->Body = $message;      //HTML Body
-  //$mail->SMTPDebug = 2;
-  $mail->AltBody = $message;     //Plain Text Body
+  $mail->Body = $message;
+  $mail->AltBody = $message;
   if(!$mail->Send()){
-    echo "Mailer Error: " . $mail->ErrorInfo;
+    $result = "Mailer Error: " . $mail->ErrorInfo;
+    echo "
+    <script type=\"text/javascript\">
+      alert(\". $result .\");
+    </script>";
   } else {
-    echo "Message has been sent";
+    $result = "Message has been sent";
+    echo "
+      <script type=\"text/javascript\">
+        alert(\"$result\");
+      </script>";
   }
 }
 
 /*fonction pour changer de mot de passe*/
-function changementmotdepasse($oldpass, $newpass, $confnewpass, $bd){
+function changementmotdepasse($oldpass, $newpass, $confnewpass, $bd, $page){
 //================== FAIRE LE LINUX CHANGEMENT DE MOT DE PASSE ==============
 /*update expiration passwoird aussi*/
-  if($_SESSION['OldPassUser'] == $oldpass){
-    if($newpass == $confnewpass){
-      $bd->query("UPDATE Comptes SET expiration_password=NOW() + INTERVAL 90 DAY, user_password=\"$newpass\" WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
-      //request dans histopassword
-      if($_SESSION['departement'] == 4){
-        //mettre 1 a modif_admin
-        $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '1', CURRENT_DATE(), '".$oldpass."');");
+  if ($page === "user"){
+    if($_SESSION['OldPassUser'] == $oldpass){
+      if($newpass == $confnewpass){
+        $bd->query("UPDATE Comptes SET expiration_password=NOW() + INTERVAL 90 DAY, user_password=\"$newpass\" WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
+        //grab le username de l'utilisateur
+        $usernameQuerry = $bd->query("SELECT nom_utilisateur FROM Comptes WHERE Comptes.compte_ID='".$_SESSION['ID_usager']."';");
+
+
+        //CHU RENDU ICITRE CRISEE !!!!!!!!!!
+        //LINUX STUFF...
+        exec(".././script.sh $usernameQuerry $newpass");
+        //request dans histopassword
+
+
+        if($_SESSION['departement'] == 4){
+          //mettre 1 a modif_admin
+          $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '1', CURRENT_DATE(), '".$oldpass."');");
+        } else{
+          //request pour historique password
+          $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '0', CURRENT_DATE(), '".$oldpass."');");
+        }
       } else{
-        //request pour historique password
-        $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '0', CURRENT_DATE(), '".$oldpass."');");
+        $result = "passnotmatch";
+        return $result;
       }
     } else{
-      $result = "passnotmatch";
-      return $result;
+        $result = "nooldpass";
+        return $result;
     }
-  } else{
-      $result = "nooldpass";
-      return $result;
+  } elseif ($page === "admin"){
+
   }
+
 }
 
 
@@ -768,5 +791,34 @@ function RAM(){
   	$memory_usage = round($mem[12]/(1024*1024), 2) . " Go / " . round($mem[7]/(1024*1024), 2) . " Go";
 
   	return $memory_usage;
+}
+
+/* ============ vérification donnner changement mot de passe USER ========*/
+function validationFormulaire($oldpass, $newpass, $confnewpass){
+  $flagerror = 0;
+
+  if($oldpass != "" && $newpass != "" && $confnewpass != ""){
+    //vérification que l'utilisateur ne marque pas lancien password comme nouveau
+    if($oldpass === $newpass){
+      //afficher un message d'erreur
+      //$errorMessage = "veuillez ne pas utiliser votre ancien mot de passe pour votre nouveau.";
+      //Lever de flag d'erreur
+      $flagerror = 1;
+    } else {
+      //vérification que le nouveau password et confirmation sont pareil
+      if($newpass != $confnewpass){
+        //afficher un message d'erreur
+        //$errorMessage = "Votre nouveau de passe et la confirmation du mot de passe ne correspond pas.";
+        $flagerror = 2;
+      }
+    }
+  } else {
+      //afficher un message d'erreur
+        //$errorMessage = "Veuillez ne laisser aucun champs vide avec une \"*\"";
+      //on "reload la page pour qu'il puissse recommencer"
+      $flagerror = 3;
+    }
+
+  return $flagerror;
 }
  ?>
