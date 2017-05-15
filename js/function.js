@@ -1,3 +1,17 @@
+//REGEX TIME !!!!!!!!!
+//regex pour Numéro Telephomne
+var regTel = /\d{3}-\d{3}-\d{4}/
+//regex utilisatble pour le nom et nom de famille (check si ya des numéro ou caractère spéciaux)
+var regNomprenom = /\d|\W/
+//regex pour le num de machine et # de poste tél (check si a des lettre et ou caratère spéciauxe)
+var regmachineposte = /\D|\W/
+//regex pour le nom d'utilisateur (check si il contient des lettre en 6 et 12 caratères)
+var regusername = /\w{6,12}/
+//regex pour le password (check si  le password est entre 6 et 12 caratères)
+var regpassword = /(\w|\W){6,12}/
+//regex pour le quota (check maximum 2 chiffres)
+var regquota = /(^\d\d+?){1,2}/
+
 // Fonction qui va permettre de rentrer une valeur Get pour appeler la liste des département
 
 function FlagDept()
@@ -66,3 +80,9 @@ function validationFormulaire(){
     document.userchgmdp.submit();
   }
 }
+
+
+/*function validationregex(name){
+  var e = document.getElementByName(name);
+  alert(e);
+}*/
