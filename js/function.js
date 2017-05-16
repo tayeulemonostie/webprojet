@@ -1,16 +1,4 @@
-//REGEX TIME !!!!!!!!!
-//regex pour Numéro Telephomne
-var regTel = /\d{3}-\d{3}-\d{4}/
-//regex utilisatble pour le nom et nom de famille (check si ya des numéro ou caractère spéciaux)
-var regNomprenom = /\d|\W/
-//regex pour le num de machine et # de poste tél (check si a des lettre et ou caratère spéciauxe)
-var regmachineposte = /\D|\W/
-//regex pour le nom d'utilisateur (check si il contient des lettre en 6 et 12 caratères)
-var regusername = /\w{6,12}/
-//regex pour le password (check si  le password est entre 6 et 12 caratères)
-var regpassword = /(\w|\W){6,12}/
-//regex pour le quota (check maximum 2 chiffres)
-var regquota = /(^\d\d+?){1,2}/
+
 
 // Fonction qui va permettre de rentrer une valeur Get pour appeler la liste des département
 
@@ -62,7 +50,7 @@ function validationFormulaire(){
     } else {
       //vérification que le nouveau password et confirmation sont pareil
       if(new_pass === pass_confirm){
-      } else{
+      } else{var strUser = e.options[e.selectedIndex].value;
         //afficher un message d'erreur
         alert("Votre nouveau de passe et la confirmation du mot de passe ne correspond pas.");
         flagerror = true;
@@ -85,32 +73,75 @@ function validationFormulaire(){
 
 function validateAny($contexte)
 {
+
+  //REGEX TIME !!!!!!!!!
+  //regex pour Numéro Telephomne
+  var regTel = /\d{3}-\d{3}-\d{4}/;
+  //regex utilisatble pour le nom et nom de famille (check si ya des numéro ou caractère spéciaux)
+  var regNomprenom = /\d|\W/;
+  //regex pour le num de machine et # de poste tél (check si a des lettre et ou caratère spéciauxe)
+  var regmachineposte = /\D|\W/;
+  //regex pour le nom d'utilisateur (check si il contient des lettre en 6 et 12 caratères)
+  var regusername = /\w{6,12}/;
+  //regex pour le password (check si  le password est entre 6 et 12 caratères)
+  var regpassword = /(\w|\W){6,12}/;
+  //regex pour le quota (check maximum 2 chiffres)
+  var regquota = /(^\d\d+?){1,2}/;
+
   //si je ne sais pas quel type de champ valider (pour modifier un utilisateur)
   if ($contexte == 0)
   {
     // il va chercher le choix que j'ai cliqué
     var e = document.getElementById("infoTag");
     var strUser = e.options[e.selectedIndex].value;
+
     // ça c'est ce qui va peut permettre d'aller modifier l'intérieur de la TD (ex. ajouter un message d'erreur)
     // si tu as pas le temps, on a juste à faire un alert() + focus()
     var td = document.getElementById("infoTagTD");
 
+
+
     switch (strUser)
     {
       case '1':
-      alert('nom!');
+        var tds = document.getElementById("infoMod").value;
+        teste = regNomprenom.test(tds);
+        if(regNomprenom.test(tds)){
+          alert("Veuillez inscrire un nom sans nombre et caractère spéciaux.");
+          document.getElementById("infoMod").focus();
+        }
       break;
       case '2':
-      alert('prenom!');
+        var tds = document.getElementById("infoMod").value;
+        teste = regNomprenom.test(tds);
+        if(regNomprenom.test(tds)){
+          alert("Veuillez inscrire un prenom sans nombre et caractère spéciaux.");
+          document.getElementById("infoMod").focus();
+        }
       break;
       case '3':
-      alert('domicile!');
+      var tds = document.getElementById("infoMod").value;
+      teste = regTel.test(tds);
+      if(regNomprenom.test(tds)){
+        alert("Veuillez inscrire un numéro de téléphone valide (888-888-8888).");
+        document.getElementById("infoMod").focus();
+      }
       break;
       case '4':
-      alert('poste tel!');
+        var tds = document.getElementById("infoMod").value;
+        teste = regmachineposte.test(tds);
+        if(regNomprenom.test(tds)){
+          alert("Veuillez inscrire un poste téléphonique à 4 chiffres.");
+          document.getElementById("infoMod").focus();
+        }
       break;
       case '5':
-      alert('numero machine!');
+        var tds = document.getElementById("infoMod").value;
+        teste = regmachineposte.test(tds);
+        if(regNomprenom.test(tds)){var strUser = e.options[e.selectedIndex].value;
+          alert("Veuillez inscrire un numéro de mahcine à 4 chiffres.");
+          document.getElementById("infoMod").focus();
+        }
       break;
     }
   }
@@ -119,43 +150,112 @@ function validateAny($contexte)
       //lorsque je mets directement un contexte dans le input (1 à 8)
       // ça c'est la fonction générique qu'on peut caller de partout quand c'est pas un contenu dynamique
       // jouer avec les tag ou refaire des scénario au besoin
+
       switch($contexte)
       {
         case 1:
-        alert('nom!');
+          var fname = document.getElementById("fname").value;
+          if(regNomprenom.test(fname)){
+            alert("Veuillez inscrire un nom sans nombre et caractère spéciaux.");
+            document.getElementById("fname").focus();
+          }
         break;
         case 2:
-        alert('prénom!');
+          var name = document.getElementById("name").value;
+          if(regNomprenom.test(name)){
+            alert("Veuillez inscrire un prénom sans nombres et/ou caractères spéciaux.");
+            document.getElementById("name").focus();
+          }
         break;
         case 3:
-        alert('num tel domicile!');
+          var notel = document.getElementById("notel").value;
+          if(regTel.test(notel)){
+            alert("Veuillez inscrire un numéro de téléphone valide (888-888-8888).");
+            document.getElementById("notel").focus();
+          }
         break;
         case 4:
-        alert('num de poste!');
+          var poste = document.getElementById("poste").value;
+          if(regmachineposte.test(poste)){
+            alert("Veuillez inscrire un poste téléphonique à 4 chiffres");
+            document.getElementById("poste").focus();
+          }
         break;
         case 5:
-        alert('num de machine!');
+        var machine = document.getElementById("machine").value;
+        if(regmachineposte.test(machine)){
+          alert("Veuillez inscrire un numéro de mahcine à 4 chiffres.");
+          document.getElementById("machine").focus();
+        }
+
         break;
         case 6:
-        alert('username!');
+        var newuser = document.getElementById("newuser").value;
+        if(regusername.test(newuser)){
+          alert("Veuillez inscrire un nom d'usager entre 6 et 12 caratères");
+          document.getElementById("newuser").focus();
+        }
         break;
         case 7:
-        alert('mot de passe!');
+          var tamere = document.getElementById("tamere").value;
+          if(regpassword.test(tamere)){
+            alert("Veuillez inscrire un mot de passe entre 6 et 12 caratères");
+            document.getElementById("tamere").focus();
+          }
         break;
         case 8:
-        alert('quota!');
+        var quot = document.getElementById("quot").value;
+        if(regquota.test(quot)){
+          alert("Veuillez inscrire un quota entre 0 et 99");
+          document.getElementById("quot").focus();
+        }
         break;
         case 9:
-        alert('onsubmit add user!');
+        var fname = document.getElementById("fname").value;
+        var quot = document.getElementById("quot").value;
+        var tamere = document.getElementById("tamere").value;
+        var newuser = document.getElementById("newuser").value;
+        var machine = document.getElementById("machine").value;
+        var poste = document.getElementById("poste").value;
+        var notel = document.getElementById("notel").value;
+        var name = document.getElementById("name").value;
+        var e = document.getElementById("infoMod");
+
+        if (fname == "" || quot == "" || tamere == "" || newuser == "" || machine == "" || poste == "" || notel == "" || name == "" || !(e.value)){
+          alert("veuillez remplir tout les champs.");
+          //document.getElementById("fname").focus();
+          //window.location.href = 'http://localhost/webprojet/webprojet/php/admin.php?menu=add_user';
+          return false;
+        }
+
+      /*
+*/
+        //alert('onsubmit add user!');
         break;
         case 10:
-        alert('onsubmit mod user!');
+          var e = document.getElementById("user");
+          var f = document.getElementById("infoTag");
+          var g = document.getElementById("infoMod");
+          if (!(e.value) || !(f.value) || !(g.value)){
+            alert("veuillez remplir tout les champs.");
+            return false;
+          }
         break;
         case 11:
-        alert('onsubmit pswd change!');
+          var e = document.getElementById("user");
+          var f = document.getElementById("new_pass");
+          if(!(e.value) || !(f.value)){
+              alert("veuillez remplir tout les champs.");
+              return false;
+          }
         break;
         case 12:
-        alert('onsubmit quota change!');
+        var e = document.getElementById("user");
+        var f = document.getElementById("infoMod");
+        if(!(e.value) || !(f.value)){
+          alert("veuillez remplir tout les champs.");
+          return false;
+        }
         break;
 
       }

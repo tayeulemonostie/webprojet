@@ -98,7 +98,7 @@ function create_user ($bd){
   /*compte les user + 1 pour donner le user_ID*/
   $UserNumber = ($req_1->rowCount())+1;
   $contenuDiv =
-    "<form method='POST' ACTION='./admin.php?menu=conf_page' onsubmit='validateAny(9)'>".PHP_EOL.
+    "<form method='POST' ACTION='./admin.php?menu=conf_page' onsubmit='return validateAny(9)'>".PHP_EOL.
       "<table cellpadding='10px'>".PHP_EOL.
           "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='fname'>Nom de famille</label>".PHP_EOL.
@@ -107,8 +107,8 @@ function create_user ($bd){
             "<input type='text' id='name' name='name' maxlength='25' onchange='validateAny(2)'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr class='formCreate'>".PHP_EOL.
-            "<td><label for='notel'># d'utilisateur</label>".PHP_EOL.
-            "<input type='text' id='notel' name='notel' maxlength='2' disabled='disabled' placeholder='".$UserNumber."'></input></td>".PHP_EOL.
+            "<td><label for='nouser'># d'utilisateur</label>".PHP_EOL.
+            "<input type='text' id='nouser' name='notel' maxlength='2' disabled='disabled' placeholder='".$UserNumber."'></input></td>".PHP_EOL.
             "<td><label for='notel'># de tél.(domicile)</label>".PHP_EOL.
             "<input type='text' id='notel' name='notel' maxlength='12' placeholder='999-999-9999' onchange='validateAny(3)'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
@@ -151,7 +151,7 @@ Elle retourne un formulaire POST  */
 function pwd_chngForm($page, $bd)
 {
   $contenuDiv =
-  "<form name='userchgmdp' action='./".$page.".php?menu=confchmdp' method='POST' onsubmit='validateAny(11)'>" . PHP_EOL;
+  "<form name='userchgmdp' action='./".$page.".php?menu=confchmdp' method='POST' onsubmit='return validateAny(11)'>" . PHP_EOL;
   if ($page == "admin")
   {
     $contenuDiv .=
@@ -558,7 +558,7 @@ Elle retourne un formulaire POST en contenu DIV */
 function mod_user ($bd){
   $contenuDiv = "";
   $contenuDiv =
-    "<form method='POST' ACTION='./admin.php?menu=confUserMod_page' onsubmit='validateAny(10)'>".PHP_EOL.
+    "<form method='POST' ACTION='./admin.php?menu=confUserMod_page' onsubmit='return validateAny(10)'>".PHP_EOL.
       "<table cellpadding='10px'>".PHP_EOL.
           "<tr class='ModifyTop'>".PHP_EOL.
             "<td class='formDept'><label for='dept' class='ModifyTop'>Utilisateur à modifier: </label>".PHP_EOL;
@@ -596,7 +596,7 @@ function mod_user ($bd){
             else
             {
               $contenuDiv .=
-              "<label for='infoMod'>Modifié pour: </label><input type='text' id='tabarnak' name='infoMod' onchange='validateAny(0)'></input>";
+              "<label for='infoMod'>Modifié pour: </label><input type='text' id='infoMod' name='infoMod' onchange='validateAny(0)'></input>";
             }
             $contenuDiv .=
             "</td>".PHP_EOL.
@@ -617,7 +617,7 @@ function mod_quota ($bd)
 {
   $contenuDiv = "";
   $contenuDiv =
-    "<form method='POST' ACTION='./admin.php?menu=confquota' onsubmit='validateAny(12)'>".PHP_EOL.
+    "<form method='POST' ACTION='./admin.php?menu=confquota' onsubmit='return validateAny(12)'>".PHP_EOL.
       "<table class='formQuota'>".PHP_EOL.
         "<tr class='ModifyTop'>".PHP_EOL.
         "<td width='200px'><label for='dept'>Utilisateur à modifier: </label></br></br>".PHP_EOL.
