@@ -98,31 +98,31 @@ function create_user ($bd){
   /*compte les user + 1 pour donner le user_ID*/
   $UserNumber = ($req_1->rowCount())+1;
   $contenuDiv =
-    "<form method='POST' ACTION='./admin.php?menu=conf_page'>".PHP_EOL.
+    "<form method='POST' ACTION='./admin.php?menu=conf_page' onsubmit='validateAny(9)'>".PHP_EOL.
       "<table cellpadding='10px'>".PHP_EOL.
           "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='fname'>Nom de famille</label>".PHP_EOL.
-            "<input type='text' id='fname' name='fname' maxlength='25'></input></td>".PHP_EOL.
+            "<input type='text' id='fname' name='fname' maxlength='25' onchange='validateAny(1)'></input></td>".PHP_EOL.
             "<td><label for='name'>Prénom</label>".PHP_EOL.
-            "<input type='text' id='name' name='name' maxlength='25'></input></td>".PHP_EOL.
+            "<input type='text' id='name' name='name' maxlength='25' onchange='validateAny(2)'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='notel'># d'utilisateur</label>".PHP_EOL.
             "<input type='text' id='notel' name='notel' maxlength='2' disabled='disabled' placeholder='".$UserNumber."'></input></td>".PHP_EOL.
             "<td><label for='notel'># de tél.(domicile)</label>".PHP_EOL.
-            "<input type='text' id='notel' name='notel' maxlength='12' placeholder='999-999-9999'></input></td>".PHP_EOL.
+            "<input type='text' id='notel' name='notel' maxlength='12' placeholder='999-999-9999' onchange='validateAny(3)'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='poste'># de poste téléphonique</label>".PHP_EOL.
-            "<input type='text' id='poste' name='poste' maxlength='4'></input></td>".PHP_EOL.
+            "<input type='text' id='poste' name='poste' maxlength='4' onchange='validateAny(4)'></input></td>".PHP_EOL.
             "<td><label for='machine'># de machine</label>".PHP_EOL.
-            "<input type='text' id='machine' name='machine' maxlength='4'></input></td>".PHP_EOL.
+            "<input type='text' id='machine' name='machine' maxlength='4' onchange='validateAny(5)'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='newuser'>Nom d'utilisateur</label>".PHP_EOL.
-            "<input type='text' id='newuser' name='newuser' maxlength='12'></input></td>".PHP_EOL.
+            "<input type='text' id='newuser' name='newuser' maxlength='12' onchange='validateAny(6)'></input></td>".PHP_EOL.
             "<td><label for='tamere'>Mot de passe</label>".PHP_EOL.
-            "<input type='text' id='tamere' name='tamere' maxlength='12'></input></td>".PHP_EOL.
+            "<input type='text' id='tamere' name='tamere' maxlength='12' onchange='validateAny(7)'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr class='formCreate'>".PHP_EOL.
             "<td><label for='dept'>Choisir le département</label>".PHP_EOL;
@@ -132,7 +132,7 @@ function create_user ($bd){
       $contenuDiv .=
             "</td>".PHP_EOL.
             "<td valign='top'><label for='quot'>Taille du quota (Go)</label>".PHP_EOL.
-            "<input type='text' id='quot' name='quot' maxlength='2'></input></td>".PHP_EOL.
+            "<input type='text' id='quot' name='quot' maxlength='2' onchange='validateAny(8)'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
           "<tr>".PHP_EOL.
             "<td colspan='2'>".PHP_EOL."<div class='rowMiddle'>".
@@ -151,7 +151,7 @@ Elle retourne un formulaire POST  */
 function pwd_chngForm($page, $bd)
 {
   $contenuDiv =
-  "<form name='userchgmdp' action='./".$page.".php?menu=confchmdp' method='POST'>" . PHP_EOL;
+  "<form name='userchgmdp' action='./".$page.".php?menu=confchmdp' method='POST' onsubmit='validateAny(11)'>" . PHP_EOL;
   if ($page == "admin")
   {
     $contenuDiv .=
@@ -159,7 +159,7 @@ function pwd_chngForm($page, $bd)
     "<table class='formPassword'>" . PHP_EOL .
     "<tr>" .PHP_EOL.
     "<td><label for='new_pass'>*Nouveau Password</label></td>" . PHP_EOL.
-    "<td><input type='password' name='new_pass' id='new_pass'></input></td></tr></table>" . PHP_EOL;
+    "<td><input type='password' name='new_pass' id='new_pass' onchange='validateAny(7)'></input></td></tr></table>" . PHP_EOL;
   }
   else
   {
@@ -274,7 +274,6 @@ Elle recoit les valeur POST les stock puis affiche en contenu DIV */
 function conf_modify ($bd)
 {
   Generate_QueryDetails($bd);
-  print_r($_SESSION['data']);
   $contenuDiv = "<h3>Vous désirez changer le champ ".$_SESSION['verbose']." de l'utilisateur ".$_SESSION['userToMod']." pour ";
   if (isset($_POST['infoTag']))
   {
@@ -493,7 +492,7 @@ $DeptCount = $req_1->rowCount();
 //Construction dynamique de la liste des départements
 $contenuDiv .=
   "<div>" . PHP_EOL.
-  "<select name='infoMod' id='infoMod' size='".$DeptCount."' class='formDept'>".PHP_EOL;
+  "<select name='infoMod' id='infoMod' onchange='validateAny(0)'  size='".$DeptCount."' class='formDept'>".PHP_EOL;
 //Tant que tu as des départements, créer une option
 while($var_vect_Dept = $req_1->fetch(PDO::FETCH_ASSOC))
 {
@@ -559,7 +558,7 @@ Elle retourne un formulaire POST en contenu DIV */
 function mod_user ($bd){
   $contenuDiv = "";
   $contenuDiv =
-    "<form method='POST' ACTION='./admin.php?menu=confUserMod_page'>".PHP_EOL.
+    "<form method='POST' ACTION='./admin.php?menu=confUserMod_page' onsubmit='validateAny(10)'>".PHP_EOL.
       "<table cellpadding='10px'>".PHP_EOL.
           "<tr class='ModifyTop'>".PHP_EOL.
             "<td class='formDept'><label for='dept' class='ModifyTop'>Utilisateur à modifier: </label>".PHP_EOL;
@@ -591,8 +590,13 @@ function mod_user ($bd){
             if (isset($_GET['deptFlag']))
             {
               $contenuDiv .=
-              "<label for='infoMod' class='ModifyTop'>Nouveau département: </label>";
+              "<label for='infoMod' class='ModifyTop' onchange='validateAny(0)'>Nouveau département: </label>";
               $contenuDiv .= Generate_Dept($bd);
+            }
+            else
+            {
+              $contenuDiv .=
+              "<label for='infoMod'>Modifié pour: </label><input type='text' id='tabarnak' name='infoMod' onchange='validateAny(0)'></input>";
             }
             $contenuDiv .=
             "</td>".PHP_EOL.
@@ -613,13 +617,13 @@ function mod_quota ($bd)
 {
   $contenuDiv = "";
   $contenuDiv =
-    "<form method='POST' ACTION='./admin.php?menu=confquota'>".PHP_EOL.
+    "<form method='POST' ACTION='./admin.php?menu=confquota' onsubmit='validateAny(12)'>".PHP_EOL.
       "<table class='formQuota'>".PHP_EOL.
         "<tr class='ModifyTop'>".PHP_EOL.
         "<td width='200px'><label for='dept'>Utilisateur à modifier: </label></br></br>".PHP_EOL.
   		  Generate_User($bd)."</td>".PHP_EOL.
         "<td width='200px'><label for='infoMod'>Nouvelle valeur de quota: </label></br></br>
-        <input type='text' id='infoMod' name='infoMod'></input></br></br>".PHP_EOL.
+        <input type='text' id='infoMod' name='infoMod' onchange='validateAny(8)'></input></br></br>".PHP_EOL.
         "<input type='submit' class='button' name='submitModUser' value='Soumettre'></input>".PHP_EOL.
         "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input></td>".PHP_EOL.
         "</tr>".PHP_EOL."</table>".PHP_EOL."</form>".PHP_EOL;
@@ -763,9 +767,6 @@ function quotaUser ($user){
   $varCommandeResult = preg_replace('/\s+/', ' ', $varCommandeResult);
   //Split le résultat de la commande en plusieur string dans un tableau
   $TabCommandeResultSplit = explode(" ", $varCommandeResult);
-
-  //commande de Débug
-  //print_r($TabCommandeResultSplit);
 
   //Je récupere seulement lespace total et utilisé de l'utilisateur
   $varUserEspaceTotal = $TabCommandeResultSplit[4];

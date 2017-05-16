@@ -29,7 +29,7 @@ function FlagDept()
   else
   {
     td.innerHTML =
-    "<label for='infoMod'>Modifié pour: </label><input type='text' id='infoMod' name='infoMod'></input>";
+    "<label for='infoMod'>Modifié pour: </label><input type='text' id='infoMod' name='infoMod' onchange='validateAny(0)'></input>";
   }
   return strUser;
 }
@@ -81,8 +81,83 @@ function validationFormulaire(){
   }
 }
 
+// Fonction qui valide n'importe quel regex
 
-/*function validationregex(name){
-  var e = document.getElementByName(name);
-  alert(e);
-}*/
+function validateAny($contexte)
+{
+  //si je ne sais pas quel type de champ valider (pour modifier un utilisateur)
+  if ($contexte == 0)
+  {
+    // il va chercher le choix que j'ai cliqué
+    var e = document.getElementById("infoTag");
+    var strUser = e.options[e.selectedIndex].value;
+    // ça c'est ce qui va peut permettre d'aller modifier l'intérieur de la TD (ex. ajouter un message d'erreur)
+    // si tu as pas le temps, on a juste à faire un alert() + focus()
+    var td = document.getElementById("infoTagTD");
+
+    switch (strUser)
+    {
+      case '1':
+      alert('nom!');
+      break;
+      case '2':
+      alert('prenom!');
+      break;
+      case '3':
+      alert('domicile!');
+      break;
+      case '4':
+      alert('poste tel!');
+      break;
+      case '5':
+      alert('numero machine!');
+      break;
+    }
+  }
+  else
+  {
+      //lorsque je mets directement un contexte dans le input (1 à 8)
+      // ça c'est la fonction générique qu'on peut caller de partout quand c'est pas un contenu dynamique
+      // jouer avec les tag ou refaire des scénario au besoin
+      switch($contexte)
+      {
+        case 1:
+        alert('nom!');
+        break;
+        case 2:
+        alert('prénom!');
+        break;
+        case 3:
+        alert('num tel domicile!');
+        break;
+        case 4:
+        alert('num de poste!');
+        break;
+        case 5:
+        alert('num de machine!');
+        break;
+        case 6:
+        alert('username!');
+        break;
+        case 7:
+        alert('mot de passe!');
+        break;
+        case 8:
+        alert('quota!');
+        break;
+        case 9:
+        alert('onsubmit add user!');
+        break;
+        case 10:
+        alert('onsubmit mod user!');
+        break;
+        case 11:
+        alert('onsubmit pswd change!');
+        break;
+        case 12:
+        alert('onsubmit quota change!');
+        break;
+
+      }
+  }
+}

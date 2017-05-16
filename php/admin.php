@@ -183,7 +183,6 @@ if (isset($_SESSION['username']))
               "</form>".PHP_EOL;
               break;
       case 'confquota':
-          print_r($_POST);
           $varHTML .=
               "<h2>Confirmation de la modification à la base de donnée</h2>".PHP_EOL.
               conf_modify($bd).
