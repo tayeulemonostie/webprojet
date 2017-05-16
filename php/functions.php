@@ -786,13 +786,13 @@ function quotaUser ($user){
   return $varQuotaUser;
 }
 
-/*fonction Contactert administrateur*/
+/*fonction Contacter administrateur*/
 function contactAdmin(){
   $varFormulaire = "<table align='center'>". PHP_EOL .
                    "<tr>" . PHP_EOL .
                       "<td align='center'>" . PHP_EOL .
                          "<form action='./user.php?menu=contact_admin' method='POST'>" . PHP_EOL .
-                         "<label for='objet'>Objet : </label>" . PHP_EOL .
+                         "<label for='objet' id='objetMail'>Objet : </label>" . PHP_EOL .
                          "<input type='text' name='objet' id='objet' size='80'></input>" . PHP_EOL . "</br></br>" . PHP_EOL .
                          "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>".
                          PHP_EOL . "</br>" . PHP_EOL.

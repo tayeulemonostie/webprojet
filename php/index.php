@@ -11,11 +11,6 @@
    16-04-2017         Sébastien             Connection à la BD
 ****************************************/
 
-/*==================================
-PENSEZ À METTRE DISPLAY_ERROR = ON À OFF AVANT REMISE
-DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
-=====================================*/
-
 /*Démarage de session*/
 error_reporting(0);
 session_start();
@@ -66,7 +61,6 @@ if (isset($_POST["login"]) && isset($_POST["password"])){
     header('Location: ./user.php');
   }
 }
-
 
  ?>
 

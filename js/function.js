@@ -1,4 +1,11 @@
-
+   //****************************************
+   //Fichier : function.js
+   //Auteur : Sébastien Corbeil & Yves distéfano
+   //Fonctionnalité : Tout le javascript
+   //Date : 11 avril 2017
+   //Historique de modifications :
+   //Date               Nom                   Description
+   //======================================
 
 // Fonction qui va permettre de rentrer une valeur Get pour appeler la liste des département
 
@@ -122,7 +129,7 @@ function validateAny($contexte)
       case '3':
       var tds = document.getElementById("infoMod").value;
       teste = regTel.test(tds);
-      if(regNomprenom.test(tds)){
+      if(regTel.test(tds)){
         alert("Veuillez inscrire un numéro de téléphone valide (888-888-8888).");
         document.getElementById("infoMod").focus();
       }
@@ -130,7 +137,7 @@ function validateAny($contexte)
       case '4':
         var tds = document.getElementById("infoMod").value;
         teste = regmachineposte.test(tds);
-        if(regNomprenom.test(tds)){
+        if(regmachineposte.test(tds)){
           alert("Veuillez inscrire un poste téléphonique à 4 chiffres.");
           document.getElementById("infoMod").focus();
         }
@@ -138,8 +145,8 @@ function validateAny($contexte)
       case '5':
         var tds = document.getElementById("infoMod").value;
         teste = regmachineposte.test(tds);
-        if(regNomprenom.test(tds)){var strUser = e.options[e.selectedIndex].value;
-          alert("Veuillez inscrire un numéro de mahcine à 4 chiffres.");
+        if(regmachineposte.test(tds)){var strUser = e.options[e.selectedIndex].value;
+          alert("Veuillez inscrire un numéro de machine à 4 chiffres.");
           document.getElementById("infoMod").focus();
         }
       break;
@@ -228,8 +235,6 @@ function validateAny($contexte)
           return false;
         }
 
-      /*
-*/
         //alert('onsubmit add user!');
         break;
         case 10:
@@ -257,7 +262,6 @@ function validateAny($contexte)
           return false;
         }
         break;
-
       }
   }
 }

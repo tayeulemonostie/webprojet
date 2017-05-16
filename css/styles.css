@@ -1,4 +1,11 @@
-/*FAIRE UNE ENTETE*/
+/****************************************
+   Fichier : style.css
+   Auteur : Sébastien Corbeil & Yves distéfano
+   Fonctionnalité : Fichier de mise en forme
+   Date : 11 avril 2017
+   Historique de modifications :
+   Date               Nom                   Description
+   =========================================================
 
 /*BACKGROUND DE TOUTES LES PAGES*/
 html {
@@ -144,6 +151,10 @@ label
   display:block;
   width:auto;
   max-width: 235px;
+}
+#objetMail
+{
+  display:inline;
 }
 /* STYLE POUR LE MESSAGE D'ACCEUIL*/
 p

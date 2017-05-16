@@ -1,6 +1,6 @@
 <?PHP
 /****************************************
-   Fichier : index.php
+   Fichier : user.php
    Auteur : Sébastien Corbeil & Yves distéfano
    Fonctionnalité : Fichier d'acceuil du site d'administration
    Date : 11 avril 2017
@@ -14,10 +14,6 @@
                                             Rendu à CSS + Regex
 ****************************************/
 
-/*==================================
-PENSEZ À METTRE DISPLAY_ERROR = ON À OFF AVANT REMISE
-DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
-=====================================*/
 
 /*Démarage de session*/
 error_reporting(0);

@@ -1,6 +1,6 @@
 <?PHP
 /****************************************
-   Fichier : index.php
+   Fichier : admin.php
    Auteur : Sébastien Corbeil & Yves distéfano
    Fonctionnalité : Fichier d'acceuil du site d'administration
    Date : 11 avril 2017
