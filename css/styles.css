@@ -1,11 +1,31 @@
 /*FAIRE UNE ENTETE*/
 
+/*BACKGROUND DE TOUTES LES PAGES*/
+.backgroundDF {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(#6380b0, #20304a); /* Standard syntax */
+}
+/* STYLE DES BOUTONS */
+.button {
+    background-color: black;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
 /*STYLE DU MENU VERTICAL*/
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    width: 200px;
+    width: auto;
     background-color: #f1f1f1;
 }
 
@@ -16,31 +36,31 @@ li a {
     text-decoration: none;
 }
 
-/* Change the link color on hover */
 li a:hover {
     background-color: #555;
     color: white;
 }
 
-/*STYLE DU TITRE*/
+/*STYLE DES TITRES*/
 
-h1 {
-    background-color: red;
-    color: orange;
+h1,h2,h3{
+  background : rgba(0,0,0,0);
+  color: white;
+  margin-left: 15px;
 }
 
 /*CLASSE DU MENU et ZONE DE CONTENU*/
 
 .zoneMenu {
   display: inline-block;
-  border: 1px solid black;
   margin: 10px;
+  background-color: black;
+  border:8px groove white;
 }
 
 .zoneContenu {
   display: inline-block;
   width: 75%;
-  border: 1px solid black;
   vertical-align: top;
   margin: 10px;
 }
@@ -58,7 +78,7 @@ h1 {
   white-space: nowrap;
   background-color: black;
   color: white;
-  font: 20px arial, sans-serif;
+  font: 14px arial, sans-serif;
 }
 
 /*CLASSE POUR ALIGNÉ LE CONTENU VERS LE HAUT*/
@@ -68,12 +88,13 @@ h1 {
 
 /*pour letat du system*/
 #tablesysetat {
-  border: 1px solid black;
+  border: 1px solid white;
 }
 
 .etatsys {
-  border: 1px solid black;
   font-size: 35px;
+  color:white;
+  border:8px groove white;
 }
 
 /*pour le formulaire créé un user*/
@@ -98,28 +119,47 @@ h1 {
   display:inline-block;
   vertical-align:top;
 }
-
+/*pour le formulaire modifier le quota*/
+.formQuota {
+  display:inline-block;
+  align:center;
+}
 /*POUR LE FORMULAIRE CHAMNGEMENT MOT DE PASSE USER*/
 .formchgmdp {
   border-spacing: 13px;
   border-collapse: separate;
 }
-
-/*=================== PAGE INDEX/LOGIN ====================*/
-#login {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(#6380b0, #20304a); /* Standard syntax */
-}
-
-#titlelogin {
-  background : rgba(0,0,0,0);
+/* STYLE POUR LES LABELS */
+label
+{
+  background-color: black;
   color: white;
+  padding: 5px;
+  font-family: Georgia,serif;
+  font-size: 16px;
+  display:block;
+  width:auto;
+  max-width: 235px;
+}
+/* STYLE POUR LE MESSAGE D'ACCEUIL*/
+p
+{
+  margin: 2cm 4cm 3cm 4cm;
+  font-family: Georgia,serif;
+  font-size: 40px;
+  color: white;
+  font-weight: bold;
+}
+/*STYLE pour l'historique de password*/
+.histoPW
+{
+  font-size: 16px;
+  color:white;
+  border:8px groove white;
 }
 
-#userpass {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  margin-bottom: auto;
+/* STYLE POUR AFFICHER LES QUOTAS */
+.large
+{
+    color:black;
 }

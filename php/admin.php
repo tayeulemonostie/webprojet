@@ -17,6 +17,7 @@ DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
 =====================================*/
 
 /*Démarage de session*/
+error_reporting(0);
 session_start();
 
 
@@ -65,7 +66,7 @@ if (isset($_SESSION['username']))
       $varHTML .=
       "<div class='zoneContenu'>".PHP_EOL.
           "<h2>Page d'acceuil</h2>".PHP_EOL.
-          "<p>Bienvenue sur l'interface SebYveAdmin</p>".PHP_EOL;
+          "<p>Bienvenue sur l'interface SebYvesAdmin</p>".PHP_EOL;
     }
     else
     {
@@ -105,7 +106,7 @@ if (isset($_SESSION['username']))
       case 'chk_syst':
           $varHTML .=
               "<h2>État du système</h2>".PHP_EOL.
-              "<table id='tablesysetat' align='center'>" . PHP_EOL.
+              "<table align='center'>" . PHP_EOL.
               "<tr>
                 <td class='etatsys'>Nom de la machine:</td>
                 <td class='etatsys'>".exec("hostname") . "</td>
@@ -131,9 +132,9 @@ if (isset($_SESSION['username']))
           $varHTML .=
               "<h2>Gestion des quotas</h2>".PHP_EOL.
               "<form action='./admin.php?menu=viewQuota' method='POST'>".PHP_EOL.
-              "<input type='submit' name ='viewQuota' width='50px' value='Voir les quotas'</input>".PHP_EOL."</form>".PHP_EOL.
+              "<input type='submit' class='button' name ='viewQuota' width='50px' value='Voir les quotas'</input>".PHP_EOL."</form>".PHP_EOL.
               "<form action='./admin.php?menu=editQuota' method='POST'>".PHP_EOL.
-              "<input type='submit' name ='editQuota' width='50px' value='Modifier les quotas'</input>".PHP_EOL."</form>".PHP_EOL;
+              "<input type='submit' class='button' name ='editQuota' width='50px' value='Modifier les quotas'</input>".PHP_EOL."</form>".PHP_EOL;
               break;
       case 'viewQuota':
           $varHTML .=
@@ -142,14 +143,15 @@ if (isset($_SESSION['username']))
               break;
       case 'editQuota':
           $varHTML .=
-              "<h2>Modifier le quota</h2>".PHP_EOL;
+              "<h2>Modifier le quota</h2>".PHP_EOL.
+              mod_quota($bd);
               break;
       case 'clr_sess':
           $varHTML .=
              "<h2>Confirmation la fermeture de session</h2>".PHP_EOL.
              "<form action='./admin.php?menu=clr_sess' method='POST'>".PHP_EOL.
-    			   "<input type='submit' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input>".PHP_EOL.
-             "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
+    			   "<input type='submit' class='button' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input>".PHP_EOL.
+             "<input type='button' class='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
     			   "</form>".PHP_EOL;
               break;
       case 'conf_page':
@@ -158,8 +160,8 @@ if (isset($_SESSION['username']))
              //c'est à l'intérieur de cette fonction que les variables session pour les requêtes sont crées
              conf_create($bd).
              "<form action='./admin.php?menu=user_todo' method='POST'>".PHP_EOL.
-             "<input type='submit' name ='ctrl_AddUser' width='50px' value='Ajouter'</input>".PHP_EOL.
-             "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
+             "<input type='submit' class='button' name ='ctrl_AddUser' width='50px' value='Ajouter'</input>".PHP_EOL.
+             "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
              "</form>".PHP_EOL;
               break;
       case 'confUserMod_page':
@@ -167,8 +169,8 @@ if (isset($_SESSION['username']))
             "<h2>Confirmation de la modification à la base de donnée</h2>".PHP_EOL.
               conf_modify($bd).
               "<form action='./admin.php?menu=mod_todo' method='POST'>".PHP_EOL.
-              "<input type='submit' name ='ctrl_modUser' width='50px' value='Modifier'</input>".PHP_EOL.
-              "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
+              "<input type='submit' class='button' name ='ctrl_modUser' width='50px' value='Modifier'</input>".PHP_EOL.
+              "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
               "</form>".PHP_EOL;
               break;
       case 'confchmdp':
@@ -176,8 +178,18 @@ if (isset($_SESSION['username']))
               "<h2>Confirmation de la modification à la base de donnée</h2>".PHP_EOL.
               conf_pswd($bd).
               "<form action='./admin.php?menu=pswd_todo' method='POST'>".PHP_EOL.
-              "<input type='submit' name ='ctrl_PWChng' width='50px' value='Modifier'</input>".PHP_EOL.
-              "<input type='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
+              "<input type='submit' class='button' name ='ctrl_PWChng' width='50px' value='Modifier'</input>".PHP_EOL.
+              "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
+              "</form>".PHP_EOL;
+              break;
+      case 'confquota':
+          print_r($_POST);
+          $varHTML .=
+              "<h2>Confirmation de la modification à la base de donnée</h2>".PHP_EOL.
+              conf_modify($bd).
+              "<form action='./admin.php?menu=quota_todo' method='POST'>".PHP_EOL.
+              "<input type='submit' class='button' name ='ctrl_QTChng' width='50px' value='Modifier'</input>".PHP_EOL.
+              "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL.
               "</form>".PHP_EOL;
               break;
       //Lorsque l'admin confirme l'ajout d'un utilisateur (L'exécution en background)
@@ -196,9 +208,10 @@ if (isset($_SESSION['username']))
             $varHTML .=
             "<h2>Utilisateur ajouté!</h2>".PHP_EOL.
             "<form action='./admin.php' method='POST'>".PHP_EOL.
-            "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
+            "<input type='button' class='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
             "</form>".PHP_EOL;
           }
+          $_SESSION['ChangeData'] = False;
           break;
       //Lorsque l'admin confirme la modification à l'utilisateur
       case 'mod_todo':
@@ -216,13 +229,14 @@ if (isset($_SESSION['username']))
             $varHTML .=
             "<h2>Utilisateur modifié!</h2>".PHP_EOL.
             "<form action='./admin.php' method='POST'>".PHP_EOL.
-            "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
+            "<input type='button' class='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
             "</form>".PHP_EOL;
           }
           else
           {
             header('Location: ./admin.php?menu=mod_user');
           }
+          $_SESSION['ChangeData'] = False;
           break;
       case 'pswd_todo':
             if ($_POST['ctrl_PWChng'] == "Modifier")
@@ -239,15 +253,41 @@ if (isset($_SESSION['username']))
                 $bd->query("INSERT INTO Historique_password (historique_ID, usager_ID, modif_admin, date_modif, ancien_password) VALUES (NULL, '".$_SESSION['ID_usager']."', '1', CURRENT_DATE(), '".$_SESSION['OldPassUser']."');");
                 exec(".././script.sh ".$_SESSION['nom_utilisateur']." ".$_SESSION['data']);
                 $varHTML .=
-                "<h2>Utilisateur modifié!</h2>".PHP_EOL.
+                "<h2>Mot de passe modifié!</h2>".PHP_EOL.
                 "<form action='./admin.php' method='POST'>".PHP_EOL.
-                "<input type='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
+                "<input type='button' class='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
                 "</form>".PHP_EOL;
               }
               else
               {
                 header('Location: ./admin.php?menu=pwd_chng');
               }
+              $_SESSION['ChangeData'] = False;
+              break;
+        case 'quota_todo':
+              if ($_POST['ctrl_QTChng'] == "Modifier")
+              {
+                $_SESSION['ChangeData'] = True;
+              }
+              else
+              {
+                header('Location: ./admin.php?menu=editQuota');
+              }
+              if ($_SESSION['ChangeData'] == True)
+              {
+              $bd->query("UPDATE Usagers_description SET ".$_SESSION['champModBD']." = '".$_SESSION['data']."' WHERE Usagers_description.usager_ID = ".$_SESSION['usager_ID']);
+              exec("sudo setquota -u ".$_SESSION['userUnixtoMod']." 0 ".$_SESSION['data']."G 50 75  -a /dev/sdb1");
+              $varHTML .=
+              "<h2>Quota modifié!</h2>".PHP_EOL.
+              "<form action='./admin.php' method='POST'>".PHP_EOL.
+              "<input type='button' class='button' onclick='FlagMain()' value='Retour'></input>".PHP_EOL.
+              "</form>".PHP_EOL;
+              }
+              else
+              {
+                header('Location: ./admin.php?menu=editQuota');
+              }
+              $_SESSION['ChangeData'] = False;
       default:
           break;
      }
@@ -279,7 +319,7 @@ else
      <link rel="stylesheet" type="text/css" href="../css/styles.css">
      <script type="text/javascript" src="../js/function.js"></script>
    </head>
-   <body>
+   <body class="backgroundDF">
      <?PHP echo $varHTML ?>
    </body>
  </html>

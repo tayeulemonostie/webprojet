@@ -136,9 +136,9 @@ function create_user ($bd){
           "</tr>".PHP_EOL.
           "<tr>".PHP_EOL.
             "<td colspan='2'>".PHP_EOL."<div class='rowMiddle'>".
-            "<input type='submit' name='submitCreate' value='Soumettre'></input>".PHP_EOL.
-            "<input type='reset' value='Effacer'></input>".PHP_EOL.
-            "<input type='button' onclick='FlagMain()' value='Annuler'></input></div></td>".PHP_EOL.
+            "<input type='submit' class='button' name='submitCreate' value='Soumettre'></input>".PHP_EOL.
+            "<input type='reset' class='button' value='Effacer'></input>".PHP_EOL.
+            "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input></div></td>".PHP_EOL.
           "</tr>".PHP_EOL.
         "</table>".PHP_EOL.
       "</form>".PHP_EOL;
@@ -166,7 +166,7 @@ function pwd_chngForm($page, $bd)
     $contenuDiv .=
     "<table class='formchgmdp' align='center'>" . PHP_EOL .
     "<tr>" .PHP_EOL.
-      "<td class='formchgmdp'>" . "<label for='old_pass'>*Ancien mot de passe : </label></td>" . PHP_EOL.
+      "<td class='formchgmdp'>" . "<label for='old_pass'>*Ancien mot de passe</label></td>" . PHP_EOL.
       "<td class='formchgmdp'><input type='password' name='old_pass' id='old_pass'></input></td></tr>" . PHP_EOL.
       "<tr>" .PHP_EOL.
       "<td class='formchgmdp'><label for='new_pass'>*Nouveau Password</label></td>" . PHP_EOL.
@@ -179,14 +179,14 @@ function pwd_chngForm($page, $bd)
     "<td><label for='pass_confirm'>*Confirmation Password</label></td>" . PHP_EOL.
     "<td><input type='password' name='pass_confirm' id='pass_confirm'></input></td></tr>" . PHP_EOL.
     "<tr>" .PHP_EOL .
-    "<td><input type='submit' value='Soumettre' onclick='validationFormulaire();'></input></td>" .PHP_EOL .
-    "<td><input type='button' onclick='FlagMainU()' value='Annuler'></input></td><tr></table>".PHP_EOL;
+    "<td><input type='submit' class='button' value='Soumettre' onclick='validationFormulaire();'></input></td>" .PHP_EOL .
+    "<td><input type='button' class='button' onclick='FlagMainU()' value='Annuler'></input></td><tr></table>".PHP_EOL;
   }
   else
   {
     $contenuDiv .=
-    "<input type='submit' class='formPassword' name='ctrl_PWChange' value='Soumettre'></input>" .PHP_EOL.
-    "<input type='button' class='formPassword' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL;
+    "<input type='submit' class='button' name='ctrl_PWChange' value='Soumettre'></input>" .PHP_EOL.
+    "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input>".PHP_EOL;
   }
   $contenuDiv .=
   "</form>" . PHP_EOL;
@@ -201,7 +201,7 @@ Elle recoit les valeur POST les stock puis affiche en contenu DIV */
 function conf_create ($bd){
   $contenuDiv = "";
   $UserNumber = 0;
-  $varDept = $_POST['dept'];
+  $varDept = $_POST['infoMod'];
 
   $in90daysTMP = mktime(0, 0, 0, date("m")  , date("d")+90, date("Y"));
   $in90days = date("Y-m-d",$in90daysTMP);
@@ -256,7 +256,7 @@ function conf_create ($bd){
         $_SESSION['no_tel_poste'] = $_POST['poste'];
         $_SESSION['no_tel_dom'] = $_POST['notel'];
         $_SESSION['no_machine'] = $_POST['machine'];
-        $_SESSION['departements_ID'] = $_POST['dept'];
+        $_SESSION['departements_ID'] = $_POST['infoMod'];
         $_SESSION['quota'] = $_POST['quot'];
         /*Pour Comptes*/
         $_SESSION['compte_ID'] = $UserNumber;
@@ -274,14 +274,18 @@ Elle recoit les valeur POST les stock puis affiche en contenu DIV */
 function conf_modify ($bd)
 {
   Generate_QueryDetails($bd);
+  print_r($_SESSION['data']);
   $contenuDiv = "<h3>Vous désirez changer le champ ".$_SESSION['verbose']." de l'utilisateur ".$_SESSION['userToMod']." pour ";
-  if ($_POST['infoTag'] == 6)
+  if (isset($_POST['infoTag']))
   {
-    $contenuDiv .= $_SESSION['deptToMod'];
-  }
-  else
-  {
-    $contenuDiv .= $_SESSION['data'];
+    if ($_POST['infoTag'] == 6)
+    {
+      $contenuDiv .= $_SESSION['deptToMod'];
+    }
+    else
+    {
+      $contenuDiv .= $_SESSION['data'];
+    }
   }
   $contenuDiv .= "</h3>";
   return $contenuDiv;
@@ -394,7 +398,7 @@ function list_user ($bd,$contexte){
         {
           $reqUser2 = $bd->query("SELECT nom_utilisateur FROM Comptes WHERE usager_ID=".($var_IndiceChamp+$var_i));
           $var_vect_UserN  = $reqUser2->fetch(PDO::FETCH_ASSOC);
-          $contenuDiv .= quotaUser($var_vect_UserN['nom_utilisateur']);
+          $contenuDiv .= "<h3 class='large'>". quotaUser($var_vect_UserN['nom_utilisateur']) . "</h3>";
         }
         $contenuDiv .= "</div>".PHP_EOL;
         $var_i++;
@@ -595,11 +599,30 @@ function mod_user ($bd){
             "</tr>".PHP_EOL.
             "<tr>".PHP_EOL.
             "<td align='center' colspan='3'>".PHP_EOL.
-            "<input type='Submit' name='submitModUser' value='Soumettre'></input>".PHP_EOL.
-            "<input type='button' onclick='FlagMain()' value='Annuler'></input></td>".PHP_EOL.
+            "<input type='submit' class='button' name='submitModUser' value='Soumettre'></input>".PHP_EOL.
+            "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input></td>".PHP_EOL.
           "</tr>".PHP_EOL.
         "</table>".PHP_EOL.
       "</form>".PHP_EOL;
+    return $contenuDiv;
+}
+/*===FONCTION FORMULAIRE MODIFIER LE QUOTA===*/
+/*La fonction prend en paramètre la Connection à la base de donnée
+Elle retourne un formulaire POST en contenu DIV */
+function mod_quota ($bd)
+{
+  $contenuDiv = "";
+  $contenuDiv =
+    "<form method='POST' ACTION='./admin.php?menu=confquota'>".PHP_EOL.
+      "<table class='formQuota'>".PHP_EOL.
+        "<tr class='ModifyTop'>".PHP_EOL.
+        "<td width='200px'><label for='dept'>Utilisateur à modifier: </label></br></br>".PHP_EOL.
+  		  Generate_User($bd)."</td>".PHP_EOL.
+        "<td width='200px'><label for='infoMod'>Nouvelle valeur de quota: </label></br></br>
+        <input type='text' id='infoMod' name='infoMod'></input></br></br>".PHP_EOL.
+        "<input type='submit' class='button' name='submitModUser' value='Soumettre'></input>".PHP_EOL.
+        "<input type='button' class='button' onclick='FlagMain()' value='Annuler'></input></td>".PHP_EOL.
+        "</tr>".PHP_EOL."</table>".PHP_EOL."</form>".PHP_EOL;
     return $contenuDiv;
 }
 /*===FONCTION GÉNÉRER L'HISTORIQUE DES CHANGEMENTS MOT DE DE PASSE===*/
@@ -639,7 +662,7 @@ $contenu .= "<table>" . PHP_EOL . "<tr>" . PHP_EOL;
   while($obj_InfoChamp = $obj_ResutatReq->fetch_field())
   {
   // Info d'entête.
-  $contenu .= "<th>".$obj_InfoChamp->name ."</th>" . PHP_EOL;
+  $contenu .= "<th class='histoPW'>".$obj_InfoChamp->name ."</th>" . PHP_EOL;
   }
   $contenu .= "</tr>". PHP_EOL;
   //Ajouter les informations dans une rangée
@@ -650,7 +673,7 @@ $contenu .= "<table>" . PHP_EOL . "<tr>" . PHP_EOL;
       // Récupération des informations de chaque champ dans une cellule
       foreach($var_vect_UnEnr as $var_IndiceChamp => $var_ValChamp)
 		    {
-		        $contenu .= "<td>".$var_ValChamp."</td>". PHP_EOL;
+		        $contenu .= "<td class='histoPW'>".$var_ValChamp."</td>". PHP_EOL;
             $varStep++;
             //à chaque 4 valeurs créer une nouvelle rangée
             if ($varStep % 4 == 0)
@@ -667,49 +690,67 @@ return $contenu;
 
 function Generate_QueryDetails($bd)
 {
-  print_r($_POST);
-
+  if (!isset($_POST['infoTag']))
+  {
+    $reqUser2 = $bd->query("SELECT nom_utilisateur FROM Comptes WHERE usager_ID=".$_POST['user']);
+    $username2 = $reqUser2->fetch(PDO::FETCH_ASSOC);
+    $_SESSION['userUnixtoMod'] = $username2['nom_utilisateur'];
+  }
   // requête pour verbalisé le user_ID
   $reqUser = $bd->query("SELECT CONCAT(prenom,' ',nom) AS username FROM Usagers_description WHERE usager_ID=".$_POST['user']);
   $username = $reqUser->fetch(PDO::FETCH_ASSOC);
   $_SESSION['userToMod'] = $username['username'];
   // requête pour verbalisé le dept_ID
-  $reqDept = $bd->query("SELECT nom_departement FROM Departements WHERE departements_ID = ".$_POST['infoMod']);
-  $departe = $reqDept->fetch(PDO::FETCH_ASSOC);
-  $_SESSION['deptToMod'] = $departe['nom_departement'];
-
+  if (isset($_POST['infoTag']))
+  {
+    if ($_POST['infoTag'] ==6)
+    {
+      $reqDept = $bd->query("SELECT nom_departement FROM Departements WHERE departements_ID = ".$_POST['infoMod']);
+      $departe = $reqDept->fetch(PDO::FETCH_ASSOC);
+      $_SESSION['deptToMod'] = $departe['nom_departement'];
+    }
+  }
   $_SESSION['data'] = $_POST['infoMod'];
   $_SESSION['usager_ID'] = $_POST['user'];
-  switch ($_POST['infoTag'])
+  if (isset($_POST['infoTag']))
   {
-    case 1:
-          $_SESSION['verbose'] = 'nom de famille';
-          $_SESSION['champModBD'] = 'nom';
-          break;
-    case 2:
-          $_SESSION['verbose'] = 'prénom';
-          $_SESSION['champModBD'] = 'prenom';
-          break;
-    case 3:
-          $_SESSION['verbose'] = '# de tél.(domicile)';
-          $_SESSION['champModBD'] = 'no_tel_nom';
-          break;
-    case 4:
-          $_SESSION['verbose'] = '# de poste téléphonique';
-          $_SESSION['champModBD'] = 'no_tel_poste';
-          break;
-    case 5:
-          $_SESSION['verbose'] = '# de machine';
-          $_SESSION['champModBD'] = 'no_machine';
-          break;
-    case 6:
-          $_SESSION['verbose'] = 'nom du département';
-          $_SESSION['champModBD'] = 'departements_ID';
-          break;
-    default:
-          header('Location: ./admin.php');
-          break;
+    switch ($_POST['infoTag'])
+    {
+      case 1:
+            $_SESSION['verbose'] = 'nom de famille';
+            $_SESSION['champModBD'] = 'nom';
+            break;
+      case 2:
+            $_SESSION['verbose'] = 'prénom';
+            $_SESSION['champModBD'] = 'prenom';
+            break;
+      case 3:
+            $_SESSION['verbose'] = '# de tél.(domicile)';
+            $_SESSION['champModBD'] = 'no_tel_dom';
+            break;
+      case 4:
+            $_SESSION['verbose'] = '# de poste téléphonique';
+            $_SESSION['champModBD'] = 'no_tel_poste';
+            break;
+      case 5:
+            $_SESSION['verbose'] = '# de machine';
+            $_SESSION['champModBD'] = 'no_machine';
+            break;
+      case 6:
+            $_SESSION['verbose'] = 'nom du département';
+            $_SESSION['champModBD'] = 'departements_ID';
+            break;
+      default:
+            header('Location: ./admin.php');
+            break;
+    }
   }
+  else
+  {
+    $_SESSION['verbose'] = 'taille du quota';
+    $_SESSION['champModBD'] = 'quota';
+  }
+
 }
 /*=================== FONCTION POUR LE USER ===================*/
 
@@ -737,7 +778,7 @@ function quotaUser ($user){
   $varUserEspaceUtil = round($varUserEspaceUtil, 4);
   //je véfifie si l'utilisateur à un quota
   if ($varUserEspaceTotal == 0){
-    $varQuotaUser = "<h3 class='large'>Aucun quota défini</h3>";
+    $varQuotaUser = "Aucun quota défini";
   } else {
     $varQuotaUser = $varUserEspaceUtil . " Go/" . $varUserEspaceTotal . " Go utilisés.";
   }
@@ -754,9 +795,9 @@ function contactAdmin(){
                          "<input type='text' name='objet' id='objet' size='80'></input>" . PHP_EOL . "</br></br>" . PHP_EOL .
                          "<textarea name='message' cols='120' rows='15' id='message' placeholder='Écrire votre message ici'></textarea>".
                          PHP_EOL . "</br>" . PHP_EOL.
-                         "<input type='submit' name='ctrl_envoi_mail' width='50px' value='Envoyer'></input>" . PHP_EOL.
-                         "<input type='reset' width='50px' value='Effacer'></input>" . PHP_EOL.
-                         "<input type='button' onclick='FlagMainU()' width='50px' value='Annuler'></input>" .
+                         "<input type='submit' class='button' name='ctrl_envoi_mail' width='50px' value='Envoyer'></input>" . PHP_EOL.
+                         "<input type='reset' class='button' width='50px' value='Effacer'></input>" . PHP_EOL.
+                         "<input type='button' class='button' onclick='FlagMainU()' width='50px' value='Annuler'></input>" .
                       "</td>" . PHP_EOL.
                     "</tr>" . PHP_EOL .
                    "</table>" . PHP_EOL;
@@ -827,7 +868,7 @@ function hddusage($path){
   } catch (Exception $e) {
     echo $e->getMessage();
   }
-  return "$freeSpace de $totalSpace utilisés";
+  return "$freeSpace sur $totalSpace";
 }
 
 function CPUusage(){

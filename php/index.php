@@ -17,6 +17,7 @@ DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
 =====================================*/
 
 /*Démarage de session*/
+error_reporting(0);
 session_start();
 
 $_SESSION['JSenabled'] = 0;
@@ -25,42 +26,38 @@ require "functions.php";
 
 /*Déclaraton de variables*/
 global $bd;
-/*c'est icitte crisse que je connect ma bite dans les données*/
+/*Connexion à la base de donnée*/
 try {
   $bd = new PDO("mysql:host=localhost;dbname=webprojet", "root", "root");
   /*activer les exeptions en cas d'erreur */
   $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  //echo "La BD du projet est connectée TABARNAK !!!";
 }
 catch(PDOExeption $e){
-  echo "CALISE la bd a pas connect... tien vla l'erreur : " . $e->getMessage();
+  echo "Échec lors de la connexion à la base de donnée... Voici l'erreur: " . $e->getMessage();
 }
-//$_SESSION['bd'] = $bd;
+/*Génération de la page de login*/
 
-/*Génération de la Page Test de fonctions login*/
-
-
-$varHTML = "<div id=\"userpass\">" . PHP_EOL .
-           "<h1 id=\"titlelogin\">Page d'authentification</h1>" . PHP_EOL
+$varHTML = "<div>" . PHP_EOL .
+           "<h1>Page d'authentification</h1>" . PHP_EOL
            . "<h3>Veuillez inscrire votre nom d'utilisateur et mot de passe</h3>" . PHP_EOL
            . "<form method=\"POST\" action=\"index.php\">" . PHP_EOL
-           . " </br> Login : <input type=\"text\" name=\"login\"/> </br></br>" . PHP_EOL
-           . "Password : <input type=\"password\" name=\"password\"/> </br>" . PHP_EOL
-           . "</br> <input type=\"submit\" name=\"submit\" value=\"Se connecter\"/>" . PHP_EOL
+           . " </br><label>Login</label><input type=\"text\" name=\"login\"/> </br></br>" . PHP_EOL
+           . "<label>Password</label><input type=\"password\" name=\"password\"/> </br>" . PHP_EOL
+           . "</br> <input type=\"submit\" class='button' name=\"submit\" value=\"Se connecter\"/>" . PHP_EOL
            . "</form>" . PHP_EOL . "</div>";
 
 /*Vérification si les POST existent si oui on call la fonction authentification()*/
 if (isset($_POST["login"]) && isset($_POST["password"])){
-  $crisse = authentification($_POST["login"], $_POST["password"], $bd);
-  if ($crisse == "non")
+  $AuthID = authentification($_POST["login"], $_POST["password"], $bd);
+  if ($AuthID == "non")
   {
    $varHTML .= "</br></br>L'utilisateur et/ou le mot de passe n'existe pas";
   }
-  elseif ($crisse == "admin")
+  elseif ($AuthID == "admin")
   {
     header('Location: ./admin.php');
   }
-  elseif ($crisse == "expire")
+  elseif ($AuthID == "expire")
   {
       $varHTML .= "</br></br>Votre mot de passe est expiré.";
   }
@@ -80,7 +77,7 @@ if (isset($_POST["login"]) && isset($_POST["password"])){
     <title>WEBPROJET</title>
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
   </head>
-  <body id="login">
+  <body class="backgroundDF">
     <?PHP echo $varHTML ?>
   </body>
 </html>

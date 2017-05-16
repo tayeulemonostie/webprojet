@@ -20,6 +20,7 @@ DANS LE FICHIER /ETC/PHP/7.0/APACHE2/php.ini
 =====================================*/
 
 /*Démarage de session*/
+error_reporting(0);
 session_start();
 
 global $bd;
@@ -40,7 +41,7 @@ require "functions.php";
 /*Génération de la page d'utilisateur ordinaire*/
 $varHTML = "<h1>Bienvenue " . $_SESSION['username'] . " !" . "</h1>" . PHP_EOL;
 $varHTML .= "<div class='zoneMenu'>".PHP_EOL.
-            "<h2>Menu</h2>".PHP_EOL.
+            "<h1>Menu</h1>".PHP_EOL.
             "<ul>".PHP_EOL.
             "<li><a href='./user.php'>Page d'Acceuil</a></li>".PHP_EOL.
             "<li><a href='./user.php?menu=chmdp'>Changement de mot de passe</a></li>".PHP_EOL.
@@ -64,14 +65,10 @@ else
   switch ($_GET['menu'])
   {
     case 'quota_user':
-      $varZoneContenue = "<h2>Voici votre Quota disponible : </h2>" . PHP_EOL .
-                         "<table align='center'>" . PHP_EOL .
-                         "<tr>" . PHP_EOL .
-                         "<td>" . quotaUser($_SESSION['login']) . "</td>" . PHP_EOL.
-                         "</tr>" . PHP_EOL . "</table>" . PHP_EOL;
+      $varZoneContenue = "<h2>Utilisation du quota: ".quotaUser($_SESSION['login'])." </h2>" . PHP_EOL;
       break;
     case 'contact_admin':
-      $varZoneContenue = "<h2>Formulaire de contact de L'administrateur</h2>" . PHP_EOL .
+      $varZoneContenue = "<h2>Formulaire pour contacter l'administrateur</h2>" . PHP_EOL .
                           contactAdmin() . PHP_EOL;
       if(isset($_POST['objet']) && $_POST['message']){
           mailtoadmin($_POST['objet'], $_POST['message']);
@@ -81,8 +78,8 @@ else
       $varZoneContenue = "<h2>Confirmation la fermeture de session</h2>".PHP_EOL.
       "<form action='./user.php?menu=clr_sess' method='POST'>".PHP_EOL.
       "<table align='center'>" . PHP_EOL . "<tr>" . PHP_EOL .
-      "<td><input type='submit' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input></td>".PHP_EOL.
-      "<td><input type='button' onclick='FlagMainU()' width='50px' value='Retour'></input></td>" . PHP_EOL.
+      "<td><input type='submit' class='button' name ='ctrl_nouvSess' width='50px' value='Quitter la session'</input></td>".PHP_EOL.
+      "<td><input type='button' class='button' onclick='FlagMainU()' width='50px' value='Retour'></input></td>" . PHP_EOL.
       "</form>".PHP_EOL . "</tr>" . PHP_EOL . "</table>" . PHP_EOL;
       break;
     case 'chmdp':
@@ -98,8 +95,8 @@ else
           $varZoneContenue .= "<table align='center'>" . PHP_EOL .
                               "<tr>" . PHP_EOL .
                               "<form action='./user.php?menu=mdptodo' method='POST'>".PHP_EOL.
-                              "<td align='center'><input type='submit' name ='ctrl_conf' width='50px' value='Modifier'</input></td>".PHP_EOL.
-                              "<td align='center'><input type='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
+                              "<td align='center'><input type='submit' class='button' name ='ctrl_conf' width='50px' value='Modifier'</input></td>".PHP_EOL.
+                              "<td align='center'><input type='button' class='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
                               "<input type='hidden' name='old_pass' value='".$_POST['old_pass']."''></input>" . PHP_EOL.
                               "<input type='hidden' name='new_pass' value='".$_POST['new_pass']."'></input>" . PHP_EOL.
                               "<input type='hidden' name='pass_confirm' value='".$_POST['pass_confirm']."'></input>" . PHP_EOL.
@@ -113,8 +110,8 @@ else
                               "</tr>" . PHP_EOL .
                               "<tr>" . PHP_EOL .
                               "<form action='./user.php?menu=chmdp' method='POST'>".PHP_EOL.
-                              "<td align='center'><input type='submit' name ='ctrl_conf' width='50px' value='Modifier'</input>".PHP_EOL.
-                              "<input type='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
+                              "<td align='center'><input type='submit' class='button' name ='ctrl_conf' width='50px' value='Modifier'</input>".PHP_EOL.
+                              "<input type='button' class='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
                               "</form>".PHP_EOL . "</tr>" . PHP_EOL . "</table>" . PHP_EOL;
           break;
         // erreur ->  les nouveaus password (new et confirm) corresponde pas
@@ -125,8 +122,8 @@ else
                               "</tr>" . PHP_EOL .
                               "<tr>" . PHP_EOL .
                               "<form action='./user.php?menu=chmdp' method='POST'>".PHP_EOL.
-                              "<td align='center'><input type='submit' name ='ctrl_conf' width='50px' value='Modifier'</input>".PHP_EOL.
-                              "<input type='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
+                              "<td align='center'><input type='submit' class='button' name ='ctrl_conf' width='50px' value='Modifier'</input>".PHP_EOL.
+                              "<input type='button' class='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
                               "</form>".PHP_EOL . "</tr>" . PHP_EOL . "</table>" . PHP_EOL;
           break;
         // erreur -> 1 ou plusieurs champs vides
@@ -137,8 +134,8 @@ else
                               "</tr>" . PHP_EOL .
                               "<tr>" . PHP_EOL .
                               "<form action='./user.php?menu=chmdp' method='POST'>".PHP_EOL.
-                              "<td align='center'><input type='submit' name ='ctrl_conf' width='50px' value='Modifier'</input>".PHP_EOL.
-                              "<input type='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
+                              "<td align='center'><input type='submit' class='button' name ='ctrl_conf' width='50px' value='Modifier'</input>".PHP_EOL.
+                              "<input type='button' class='button' onclick='FlagMainU()' value='Annuler'></input></td>".PHP_EOL.
                               "</form>".PHP_EOL . "</tr>" . PHP_EOL . "</table>" . PHP_EOL;
         break;
       }
@@ -149,7 +146,7 @@ else
                           "<table align='center'>" . PHP_EOL .
                           "<tr>" . PHP_EOL .
                           "<form action='./user.php' method='POST'>".PHP_EOL.
-                          "<td align='center'><input type='button' onclick='FlagMainU()' width='50px' value='Retour'></input></td>" . PHP_EOL.
+                          "<td align='center'><input type='button' class='button' onclick='FlagMainU()' width='50px' value='Retour'></input></td>" . PHP_EOL.
                           "</form>".PHP_EOL . "</tr>" . PHP_EOL . "</table>" . PHP_EOL;
       break;
   }
@@ -170,7 +167,7 @@ else
      <link rel="stylesheet" type="text/css" href="../css/styles.css">
      <script type="text/javascript" src="../js/function.js"></script>
    </head>
-   <body>
+   <body class="backgroundDF">
      <?PHP echo $varHTML ?>
      <div class="zoneContenu">
        <?PHP echo $varZoneContenue ?>
